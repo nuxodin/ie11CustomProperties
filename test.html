@@ -6,10 +6,13 @@
   <title>JS Bin</title>
   <script src="./ie11CustomProperties.js"></script>
 </head>
-<body>
+<body class="theme1">
   <style>
-  body {
-  --theme-color:#f7a901
+  .theme1 {
+    --theme-color:#f7a901;
+  }
+  .theme2 {
+    --theme-color:#a9f701;
   }
   a {
     color:var(--theme-color);
@@ -33,5 +36,10 @@
     a.innerHTML = 'dynamic added link'
     document.body.appendChild(a);
   </script>
+  <div class="theme2">
+    <h2>Title</h2>
+    <a href="#">just a link</a>
+    <input type="text">
+  </div>
 </body>
 </html>
