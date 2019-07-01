@@ -1,6 +1,6 @@
 // c1.onElement - helper
 !function(){ 'use strict';
-	    
+	var w = window;
 	if (!w.WeakSet) {
 	    w.WeakSet = function(iterable){
 		this.Map = new WeakMap();
@@ -16,7 +16,7 @@
 	    }
 	}
 
-	if (!window.c1) window.c1 = {};
+	if (!w.c1) w.c1 = {};
 	var listeners = [],
 	    root = document.documentElement,
 	    Observer;
