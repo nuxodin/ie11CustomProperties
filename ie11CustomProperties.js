@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded',function(){
 			if (css === newCss) return;
 			el.disabled = true;
 			var style = document.createElement('style');
-			el.after(style);
+			el.parentNode.insertAfter(style, el);
 			activateStyleElement(style, newCss);
 		});
 	});
