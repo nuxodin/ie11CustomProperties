@@ -1,5 +1,6 @@
 // c1.onElement - helper
 !function(){ 'use strict';
+
 	var w = window;
 	if (!w.WeakSet) {
 	    w.WeakSet = function(iterable){
