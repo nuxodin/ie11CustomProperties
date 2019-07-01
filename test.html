@@ -4,8 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>JS Bin</title>
-  
   <script src="./ie11CustomProperties.js"></script>
+</head>
+<body>
   <style>
   body {
   --theme-color:#f7a901
@@ -22,10 +23,11 @@
   input:focus {
     border-color:var(--theme-color);
   }
-
+  style, script {
+    display:block;
+    white-space: pre;
+  }
   </style>
-</head>
-<body>
   <h2>Title</h2>
   <a href="#">just a link</a>
   <input type="text">
