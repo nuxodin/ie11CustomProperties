@@ -1,6 +1,18 @@
 // c1.onElement - helper
 !function(){ 'use strict';
 
+	if (!Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector;
+	if (!Element.prototype.closest) {
+	  Element.prototype.closest = function(s) {
+	    var el = this;
+	    do {
+	      if (el.matches(s)) return el;
+	      el = el.parentElement || el.parentNode;
+	    } while (el !== null && el.nodeType === 1);
+	    return null;
+	  };
+	}
+
 	var w = window;
 	if (!w.WeakSet) {
 	    w.WeakSet = function(iterable){
@@ -28,16 +40,17 @@
 		}
 	    var listener = {
 		selector: selector,
-			immediate: options.immediate,
+		immediate: options.immediate,
 		//disconnectedCallback: disconnectedCallback,
 		elements: new WeakSet(),
 	    };
+
 		if (options.parsed) {
-		listener.parsed = function(el){
+			listener.parsed = function(el){
 				requestAnimationFrame(function(){
-					options.parsed(el);
+						options.parsed(el);
 				});
-			}
+			};
 		}
 
 	    var els = root.querySelectorAll(listener.selector), i=0, el;
@@ -59,7 +72,7 @@
 	};
 	function checkListener(listener, target) {
 	    var i=0, el, els = [];
-	    target && target.msMatchesSelector(listener.selector) && els.push(target);
+	    target && target.matches(listener.selector) && els.push(target);
 	    if (loaded) { // ok? check inside node on innerHTML - only when loaded
 		Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
 	    }
