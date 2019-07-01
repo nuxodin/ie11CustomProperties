@@ -1,76 +1,91 @@
 // c1.onElement - helper
 !function(){ 'use strict';
-if (!window.c1) window.c1 = {};
-
-var listeners = [],
-    root = document.documentElement,
-    Observer;
-
-c1.onElement = function(selector, options/*, disconnectedCallback*/) {
-	if (typeof options === 'function') {
-		options = { parsed:options }
+	    
+	if (!w.WeakSet) {
+	    w.WeakSet = function(iterable){
+		this.Map = new WeakMap();
+		iterable && iterable.forEach(this.add, this);
+	    }
+	    WeakSet.prototype = {
+		add:function(value){
+		    this.Map.set(value, 1);
+		    return this;
+		},
+		delete:function(value){ return this.Map.delete(value); },
+		has:function(value){ return this.Map.has(value); }
+	    }
 	}
-    var listener = {
-        selector: selector,
-		immediate: options.immediate,
-        //disconnectedCallback: disconnectedCallback,
-        elements: new WeakSet(),
-    };
-	if (options.parsed) {
-    	listener.parsed = function(el){
-			requestAnimationFrame(function(){
-				options.parsed(el);
-			});
+
+	if (!window.c1) window.c1 = {};
+	var listeners = [],
+	    root = document.documentElement,
+	    Observer;
+
+	c1.onElement = function(selector, options/*, disconnectedCallback*/) {
+		if (typeof options === 'function') {
+			options = { parsed:options }
 		}
+	    var listener = {
+		selector: selector,
+			immediate: options.immediate,
+		//disconnectedCallback: disconnectedCallback,
+		elements: new WeakSet(),
+	    };
+		if (options.parsed) {
+		listener.parsed = function(el){
+				requestAnimationFrame(function(){
+					options.parsed(el);
+				});
+			}
+		}
+
+	    var els = root.querySelectorAll(listener.selector), i=0, el;
+	    while (el = els[i++]) {
+		listener.elements.add(el);
+		listener.parsed    && listener.parsed.call(el, el);
+		listener.immediate && listener.immediate.call(el, el);
+	    }
+
+	    listeners.push(listener);
+	    if (!Observer) {
+		Observer = new MutationObserver(checkMutations);
+		Observer.observe(root, {
+		    childList: true,
+		    subtree: true
+		});
+	    }
+	    checkListener(listener);
+	};
+	function checkListener(listener, target) {
+	    var i=0, el, els = [];
+	    target && target.matches(listener.selector) && els.push(target);
+	    if (loaded) { // ok? check inside node on innerHTML - only when loaded
+		Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
+	    }
+	    while (el = els[i++]) {
+		if (listener.elements.has(el)) continue;
+		listener.elements.add(el);
+		//listener.connectedCallback.call(el, el);
+		listener.parsed    && listener.parsed.call(el, el);
+		listener.immediate && listener.immediate.call(el, el);
+	    }
+	}
+	function checkListeners(inside) {
+	    var i=0, listener;
+	    while (listener = listeners[i++]) checkListener(listener, inside);
+	}
+	function checkMutations(mutations) {
+	    var j=0, i, mutation, nodes, target;
+	    while (mutation = mutations[j++]) {
+		nodes = mutation.addedNodes, i=0;
+		while (target=nodes[i++]) target.nodeType === 1 && checkListeners(target);
+	    }
 	}
 
-    var els = root.querySelectorAll(listener.selector), i=0, el;
-    while (el = els[i++]) {
-        listener.elements.add(el);
-        listener.parsed    && listener.parsed.call(el, el);
-        listener.immediate && listener.immediate.call(el, el);
-    }
-
-    listeners.push(listener);
-    if (!Observer) {
-        Observer = new MutationObserver(checkMutations);
-        Observer.observe(root, {
-            childList: true,
-            subtree: true
-        });
-    }
-    checkListener(listener);
-};
-function checkListener(listener, target) {
-    var i=0, el, els = [];
-    target && target.matches(listener.selector) && els.push(target);
-    if (loaded) { // ok? check inside node on innerHTML - only when loaded
-        Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
-    }
-    while (el = els[i++]) {
-        if (listener.elements.has(el)) continue;
-        listener.elements.add(el);
-        //listener.connectedCallback.call(el, el);
-        listener.parsed    && listener.parsed.call(el, el);
-        listener.immediate && listener.immediate.call(el, el);
-    }
-}
-function checkListeners(inside) {
-    var i=0, listener;
-    while (listener = listeners[i++]) checkListener(listener, inside);
-}
-function checkMutations(mutations) {
-    var j=0, i, mutation, nodes, target;
-    while (mutation = mutations[j++]) {
-        nodes = mutation.addedNodes, i=0;
-        while (target=nodes[i++]) target.nodeType === 1 && checkListeners(target);
-    }
-}
-
-var loaded = false;
-document.addEventListener('DOMContentLoaded',function(){
-    loaded = true;
-});
+	var loaded = false;
+	document.addEventListener('DOMContentLoaded',function(){
+	    loaded = true;
+	});
 
 }();
 
