@@ -1,6 +1,6 @@
 // c1.onElement - helper
 !function(){ 'use strict';
-if (!window.c1) c1 = {};
+if (!window.c1) window.c1 = {};
 
 var listeners = [],
     root = document.documentElement,
