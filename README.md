@@ -21,6 +21,6 @@ Custom Properties polyfill for IE11
 - specificity for properties containing "var()" is always little highter, because each selector gets an additional class-selector
 
 ## demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/0b993465d0d10d826b874ad1d4938f76f8093816/test.html?v12
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/d4a0b13a5037e0a1f20a83b19c00bf92855e3c7f/test.html?v16
 
 ## your improvement welcome!
