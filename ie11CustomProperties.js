@@ -59,7 +59,7 @@
 	};
 	function checkListener(listener, target) {
 	    var i=0, el, els = [];
-	    target && target.matches(listener.selector) && els.push(target);
+	    target && target.msMatchesSelector(listener.selector) && els.push(target);
 	    if (loaded) { // ok? check inside node on innerHTML - only when loaded
 		Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
 	    }
