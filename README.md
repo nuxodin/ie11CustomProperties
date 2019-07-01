@@ -1,4 +1,4 @@
-# ie11CustomProperties
+# ie11 Custom Properties
 Custom Properties polyfill for IE11
 
 
