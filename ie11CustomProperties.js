@@ -1,20 +1,80 @@
-// it can
-// - handle dynamic added style, linke-elements
-// - cascade works
-// - inheritance works
-// - :hover, :focus but it has to be improved
-// - no need to configure, just add the script
-// - js-integration: just call style.setProperty('--x','y'), style.getPropertyValue('--x')
-// - just 1.5k gziped, Who would have thought that?
+// c1.onElement - helper
+!function(){ 'use strict';
+if (!window.c1) c1 = {};
 
-// limitations / bugs
-// - overwride a custom-property in a style-tag with the same specificity does not work
-// - dynamic added --variables are not inherited
-// - getComputedStyle(el).getPropertyValue() // will not get inherited values at the moment
-// - performance is not bad, but if you can improve..
-// - styles in element-attributes not handled yet
-// - specificity is always little3 highter, because each selector gets additional class-selector
+var listeners = [],
+    root = document.documentElement,
+    Observer;
 
+c1.onElement = function(selector, options/*, disconnectedCallback*/) {
+	if (typeof options === 'function') {
+		options = { parsed:options }
+	}
+    var listener = {
+        selector: selector,
+		immediate: options.immediate,
+        //disconnectedCallback: disconnectedCallback,
+        elements: new WeakSet(),
+    };
+	if (options.parsed) {
+    	listener.parsed = function(el){
+			requestAnimationFrame(function(){
+				options.parsed(el);
+			});
+		}
+	}
+
+    var els = root.querySelectorAll(listener.selector), i=0, el;
+    while (el = els[i++]) {
+        listener.elements.add(el);
+        listener.parsed    && listener.parsed.call(el, el);
+        listener.immediate && listener.immediate.call(el, el);
+    }
+
+    listeners.push(listener);
+    if (!Observer) {
+        Observer = new MutationObserver(checkMutations);
+        Observer.observe(root, {
+            childList: true,
+            subtree: true
+        });
+    }
+    checkListener(listener);
+};
+function checkListener(listener, target) {
+    var i=0, el, els = [];
+    target && target.matches(listener.selector) && els.push(target);
+    if (loaded) { // ok? check inside node on innerHTML - only when loaded
+        Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
+    }
+    while (el = els[i++]) {
+        if (listener.elements.has(el)) continue;
+        listener.elements.add(el);
+        //listener.connectedCallback.call(el, el);
+        listener.parsed    && listener.parsed.call(el, el);
+        listener.immediate && listener.immediate.call(el, el);
+    }
+}
+function checkListeners(inside) {
+    var i=0, listener;
+    while (listener = listeners[i++]) checkListener(listener, inside);
+}
+function checkMutations(mutations) {
+    var j=0, i, mutation, nodes, target;
+    while (mutation = mutations[j++]) {
+        nodes = mutation.addedNodes, i=0;
+        while (target=nodes[i++]) target.nodeType === 1 && checkListeners(target);
+    }
+}
+
+var loaded = false;
+document.addEventListener('DOMContentLoaded',function(){
+    loaded = true;
+});
+
+}();
+
+// main logic
 !function(){ 'use strict';
 	var docElSty = document.documentElement.style;
 	docElSty.setProperty('--x','y');
@@ -210,82 +270,5 @@
         };
         request.send();
     }
-
-}();
-
-
-// c1.onElement - helper
-!function(){ 'use strict';
-if (!window.c1) c1 = {};
-
-var listeners = [],
-    root = document.documentElement,
-    Observer;
-
-c1.onElement = function(selector, options/*, disconnectedCallback*/) {
-	if (typeof options === 'function') {
-		options = { parsed:options }
-	}
-    var listener = {
-        selector: selector,
-		immediate: options.immediate,
-        //disconnectedCallback: disconnectedCallback,
-        elements: new WeakSet(),
-    };
-	if (options.parsed) {
-    	listener.parsed = function(el){
-			requestAnimationFrame(function(){
-				options.parsed(el);
-			});
-		}
-	}
-
-    var els = root.querySelectorAll(listener.selector), i=0, el;
-    while (el = els[i++]) {
-        listener.elements.add(el);
-        listener.parsed    && listener.parsed.call(el, el);
-        listener.immediate && listener.immediate.call(el, el);
-    }
-
-    listeners.push(listener);
-    if (!Observer) {
-        Observer = new MutationObserver(checkMutations);
-        Observer.observe(root, {
-            childList: true,
-            subtree: true
-        });
-    }
-    checkListener(listener);
-};
-function checkListener(listener, target) {
-    var i=0, el, els = [];
-    target && target.matches(listener.selector) && els.push(target);
-    if (loaded) { // ok? check inside node on innerHTML - only when loaded
-        Array.prototype.push.apply(els, (target||root).querySelectorAll(listener.selector));
-    }
-    while (el = els[i++]) {
-        if (listener.elements.has(el)) continue;
-        listener.elements.add(el);
-        //listener.connectedCallback.call(el, el);
-        listener.parsed    && listener.parsed.call(el, el);
-        listener.immediate && listener.immediate.call(el, el);
-    }
-}
-function checkListeners(inside) {
-    var i=0, listener;
-    while (listener = listeners[i++]) checkListener(listener, inside);
-}
-function checkMutations(mutations) {
-    var j=0, i, mutation, nodes, target;
-    while (mutation = mutations[j++]) {
-        nodes = mutation.addedNodes, i=0;
-        while (target=nodes[i++]) target.nodeType === 1 && checkListeners(target);
-    }
-}
-
-var loaded = false;
-document.addEventListener('DOMContentLoaded',function(){
-    loaded = true;
-});
 
 }();
