@@ -35,15 +35,16 @@
     a.href = '#';
     a.innerHTML = 'dynamic added link'
     document.body.appendChild(a);
-    
-    if (!document.body.msMatchesSelector) {
-      alert("Visit this Page in IE11!")
-    }
   </script>
   <div class="theme2">
     <h2>Title</h2>
     <a href="#">just a link</a>
     <input type="text">
   </div>
+  <script>
+    if (!document.body.msMatchesSelector) {
+      alert("Visit this Page in IE11!")
+    }
+  </script>
 </body>
 </html>
