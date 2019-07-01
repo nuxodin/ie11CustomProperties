@@ -164,11 +164,11 @@
         });
     }
     function elementAddGetters(el, properties, selector){
-		el.setAttribute('iecp-needed',true);
-		if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
+	el.setAttribute('iecp-needed',true);
+	if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
         for (var i=0, prop; prop = properties[i++];) {
 			el.ieCPsNeeded[prop] = selector;
-		}
+	}
     }
     function addSettersSelector(selector, propVals) {
 		// var els = document.querySelectorAll(selector); // works without inheritance
@@ -184,7 +184,7 @@
 			el.setAttribute('iecp--'+prop) // value not needed!?
 		}
 		drawTree(el);
-    }
+	}
 
 	var uniqueCounter = 0;
 
@@ -247,7 +247,7 @@
 	// 	attributes: true,
 	// 	subtree: true
 	// });
-	/* *
+	/* */
 	setInterval(function(){
 		drawTree(document.documentElement);
 	},200);
