@@ -16,7 +16,7 @@ Custom Properties polyfill for IE11
 ## limitations / bugs
 - overwride a custom-property in a style-tag with the same specificity does not work
 - dynamic added --variables are not inherited
-- getComputedStyle(el).getPropertyValue() // will not get inherited values at the moment
+- getComputedStyle(el).getPropertyValue() will not get inherited values yet
 - styles in element-attributes not handled yet
 - specificity for properties containing "var()" is always little highter, because each selector gets an additional class-selector
 
