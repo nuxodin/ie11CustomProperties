@@ -20,4 +20,7 @@ Custom Properties polyfill for IE11
 - styles in element-attributes not handled yet
 - specificity for properties containing "var()" is always little highter, because each selector gets an additional class-selector
 
+## demo:
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/0b993465d0d10d826b874ad1d4938f76f8093816/test.html?v12
+
 ## your improvement welcome!
