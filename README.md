@@ -3,7 +3,7 @@ Custom Properties polyfill for IE11
 
 
 ## it can
-- handle dynamic added style, linke-elements
+- handle dynamic added style, link-elements
 - handle dynamic added html-content
 - cascade works
 - inheritance works
