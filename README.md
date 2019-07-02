@@ -13,8 +13,7 @@ Custom Properties polyfill for IE11
 - add the script, it just works!
 - just 1.5k gziped, Who would have thought that?
 
-## limitations / bugs
-- overwride a custom-property in a style-tag with the same specificity does not work
+## limitations
 - dynamic added --variables are not inherited
 - getComputedStyle(el).getPropertyValue() will not get inherited values yet
 - styles in element-attributes not handled yet
