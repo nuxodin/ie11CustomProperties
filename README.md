@@ -10,7 +10,7 @@ Custom Properties polyfill for IE11
 - :focus
 - js-integration: just call style.setProperty('--x','y'), style.getPropertyValue('--x')
 - add the script, it just works!
-- just 1.5k gziped, Who would have thought that?
+- under 2k gziped, who would have thought that?
 
 ## limitations
 - dynamic added --variables are not inherited
