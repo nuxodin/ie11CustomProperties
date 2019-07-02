@@ -3,18 +3,17 @@ Custom Properties polyfill for IE11
 
 
 ## it can
-- handle dynamic added style, link-elements
+- handle dynamic added `<style>`, `<link>`-elements
 - handle dynamic added html-content
 - cascade works
 - inheritance works
 - :focus
-- js-integration: just call style.setProperty('--x','y'), style.getPropertyValue('--x')
-- add the script, it just works!
+- js-integration: just call `style.setProperty('--x','y')`, `style.getPropertyValue('--x')`
 - under 2k gziped, who would have thought that?
 
 ## limitations
-- dynamic added --variables are not inherited
-- getComputedStyle(el).getPropertyValue() will not get inherited values yet
+- dynamic added `--variables` are not inherited
+- `getComputedStyle(el).getPropertyValue()` will not get inherited values yet
 - styles in element-attributes not handled yet
 - specificity for properties containing "var()" is always little highter, because each selector gets an additional class-selector
 
