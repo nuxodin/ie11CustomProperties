@@ -17,7 +17,7 @@ Custom Properties polyfill for IE11
 - `getComputedStyle(el).getPropertyValue()` will not get inherited values yet
 
 ## limitations
-- styles in element-attributes can not be handled
+- styles in element-attributes can not be handled `<div style="--color:blue">`, I could implement that if someone needed it: `<div style="--color:blue; -ie-color:blue">`
 - specificity for properties containing "var()" is always little highter, cause each selector gets an additional class-selector (eg. `#header` results in `#header.iecp_u44`)
 
 ## demo:
