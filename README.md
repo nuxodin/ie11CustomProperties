@@ -15,6 +15,7 @@ Custom Properties polyfill for IE11
 ## todo
 - dynamic added `--variables` are not inherited yet
 - `getComputedStyle(el).getPropertyValue()` will not get inherited values yet
+- listen for mouseenter/mouseleave to support `hover:`
 
 ## limitations
 - styles in element-attributes can not be handled `<div style="--color:blue">`, I could implement that if someone needs it: `<div style="--color:blue; -ie-color:blue">`
