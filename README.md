@@ -10,9 +10,9 @@ Custom Properties polyfill for IE11
 - fallback works `var(--color, blue)`
 - :focus, :active, :hover
 - js-integration:  
- - `style.setProperty('--x','y')`
- - `style.getPropertyValue('--x')`
- - `getComputedStyle(el).getPropertyValue('--inherited')` !!
+    - `style.setProperty('--x','y')`
+    - `style.getPropertyValue('--x')`
+    - `getComputedStyle(el).getPropertyValue('--inherited')` !!
 - under 2k gziped, who would have thought that?
 
 ## todo
