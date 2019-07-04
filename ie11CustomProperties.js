@@ -168,12 +168,12 @@
     function elementAddSetters(el, propVals){
 		if (!el.ieCP_setters) el.ieCP_setters = {};
 		for (var prop in propVals) { // {foo:#fff, bar:baz}
-			el.ieCP_setters['--'+prop] = 1 // value not needed yet!
+			el.ieCP_setters['--'+prop] = 1; // value not needed yet!
 		}
 		drawTree(el);
     }
 
-	var uniqueCounter = 0; // use .uniqueNumber?
+	var uniqueCounter = 0;
 
 	function drawElement(el){
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
@@ -192,9 +192,7 @@
             var propWithVar = style['-ieVar-'+prop];
             var value = propWithVar.replace(/var\(([^),]+)(\,(.+))?\)/, function(full, variable, x, fallback){
 				variable = variable.trim();
-				//return style.getPropertyValue(variable); // no inheritance
 				var pValue = style.getPropertyValue(variable);
-				if (pValue===undefined) pValue = elementCPValue(el, variable); // inherited
 				if (pValue===undefined && fallback!==undefined) pValue = fallback.trim(); // fallback
 				return pValue;
             });
@@ -202,24 +200,14 @@
             //el.style[prop] = value; // element inline-style: strong specificity
         }
 	}
-	function elementCPValue(el, variable){
-		do {
-			if (el.ieCP_setters && el.ieCP_setters[variable]) {
-				var style = getComputedStyle(el);
-				var val = style.getPropertyValue(variable);
-				if (val!==undefined) return val;
-			}
-			el = el.parentNode;
-		} while (el !== null && el.nodeType === 1);
-	}
 
 	function drawTree(target){
 		requestAnimationFrame(function(){
-//console.time('test')
+//console.time('test1')
 			var els = target.querySelectorAll('[iecp-needed]');
 			if (target.hasAttribute('iecp-needed')) drawElement(target); // self
 			for (var i=0, el; el=els[i++];) drawElement(el); // tree
-//console.timeEnd('test')
+//console.timeEnd('test1')
 		})
 	}
 	function drawTreeEvent(e){
@@ -246,6 +234,24 @@
 	/* */
 
 
+	// add owningElement to Element.style
+	var descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'style');
+	var styleGetter = descriptor.get;
+	descriptor.get = function(){
+		const style = styleGetter.call(this);
+		style.owningElement = this;
+		return style;
+	}
+    Object.defineProperty(HTMLElement.prototype, 'style', descriptor);
+
+	// add computedFor to computed style-objects
+	var originalGetComputed = getComputedStyle;
+	window.getComputedStyle = function(el){
+		var style = originalGetComputed.apply(this, arguments);
+		style.computedFor = el;
+		return style;
+	}
+
 	// getPropertyValue / setProperty hooks
     var CSSStyleDeclarationProto = CSSStyleDeclaration.prototype;
 
@@ -253,8 +259,25 @@
     Object.defineProperty(CSSStyleDeclarationProto, 'getPropertyValue', {
         value:function(property) {
             if (property.match(/^--/)) {
-                property = property.replace(/^--/, '-ie-');
-                return this[property];
+                var ieProperty = property.replace(/^--/, '-ie-');
+                var value = this[ieProperty];
+
+				if (this.computedFor && value === undefined) { // inherited
+					var el = this.computedFor.parentNode;
+					while (el.nodeType === 1) {
+						if (el.ieCP_setters && el.ieCP_setters[property]) {
+							var style = getComputedStyle(el);
+							var tmpVal = style[ieProperty];
+							if (tmpVal!==undefined) {
+								value = tmpVal;
+								break;
+							}
+						}
+						el = el.parentNode;
+					}
+				}
+
+				return value;
             }
             return original.apply(this, arguments);
         }
@@ -264,6 +287,14 @@
     Object.defineProperty(CSSStyleDeclarationProto, 'setProperty', {
         value:function(property, value, prio) {
             if (property.match(/^--/)) {
+
+				if (this.owningElement) {
+					const el = this.owningElement;
+					if (!el.ieCP_setters) el.ieCP_setters = {};
+					el.ieCP_setters[property] = 1;
+					// drawTree(el); // todo
+				}
+
                 property = property.replace(/^--/, '-ie-');
                 this.cssText += '; '+property+':'+value+';';
                 //this[property] = value;
