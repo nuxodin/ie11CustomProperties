@@ -21,7 +21,7 @@ Custom Properties polyfill for IE11
 - ~~listen for mouseenter/mouseleave to support hover:~~
 
 ## limitations
-- styles in element-attributes can not be handled `<div style="--color:blue">`, I could implement that if someone needs it: `<div style="--color:blue; -ie-color:blue">`
+- styles in element-attributes can not be handled `<div style="--color:blue">`, I could implement the following if someone needs it: `<div style="--color:blue; -ie-color:blue">`
 - specificity for properties containing "var()" is always little highter, cause each selector gets an additional class-selector (eg. `#header` results in `#header.iecp_u44`)
 
 ## demo:
