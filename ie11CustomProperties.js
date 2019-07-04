@@ -155,12 +155,34 @@
 		el.setAttribute('iecp-needed',true);
 		if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
         for (var i=0, prop; prop = properties[i++];) {
-			el.ieCPsNeeded[prop] = selector;
+			el.ieCPsNeeded[prop] = selector; // multiple selectors?
 		}
     }
     function addSettersSelector(selector, propVals) {
 		// var els = document.querySelectorAll(selector); // works without inheritance
-		// todo handle :hover, ,:focus
+
+		var parts = selector.split(':hover');
+		if (parts.length > 1) {
+			c1.onElement(parts[0], function(el){
+				el.addEventListener('mouseenter', drawTreeEvent);
+				el.addEventListener('mouseleave', drawTreeEvent);
+			});
+		}
+		var parts = selector.split(':focus');
+		if (parts.length > 1) {
+			c1.onElement(parts[0], function(el){
+				el.addEventListener('focusin', drawTreeFocusInEvent);
+				el.addEventListener('focusout', drawTreeEvent);
+			});
+		}
+		var parts = selector.split(':active');
+		if (parts.length > 1) {
+			c1.onElement(parts[0], function(el){
+				el.addEventListener('focusin', drawTreeFocusInEvent);
+				el.addEventListener('focusout', drawTreeEvent);
+			});
+		}
+
         c1.onElement(selector, function(el){
             elementAddSetters(el, propVals);
         });
@@ -213,10 +235,16 @@
 	function drawTreeEvent(e){
 		drawTree(e.target)
 	}
+	function drawTreeFocusInEvent(e){
+		drawTree(e.target)
+		setTimeout(function(){
+			drawTree(e.target)
+		},100);
+	}
 
 	// :focus
-	addEventListener('focusin', drawTreeEvent, true);
-	addEventListener('focusout', drawTreeEvent, true);
+	//addEventListener('focusin', drawTreeEvent, true);
+	//addEventListener('focusout', drawTreeEvent, true);
 	// listeners, todo
 	// var observer = new MutationObserver(function(mutations) {
 	// 	for (var i, mutation; mutation=mutations[i++];) {
