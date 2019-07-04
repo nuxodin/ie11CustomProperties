@@ -13,8 +13,8 @@ Custom Properties polyfill for IE11
 - under 2k gziped, who would have thought that?
 
 ## todo
-- ~~dynamic added `--variables` are not inherited yet~~
-- ~~`getComputedStyle(el).getPropertyValue()` will not get inherited values yet~~
+- ~~dynamic added --variables are not inherited yet~~
+- ~~getComputedStyle(el).getPropertyValue() will not get inherited values yet~~
 - listen for mouseenter/mouseleave to support `hover:`
 
 ## limitations
