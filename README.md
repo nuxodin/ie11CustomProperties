@@ -8,14 +8,17 @@ Custom Properties polyfill for IE11
 - cascade works
 - inheritance works
 - fallback works `var(--color, blue)`
-- :focus, :active
-- js-integration: just call `style.setProperty('--x','y')`, `style.getPropertyValue('--x')`
+- :focus, :active, :hover
+- js-integration:  
+ - `style.setProperty('--x','y')`
+ - `style.getPropertyValue('--x')`
+ - `getComputedStyle(el).getPropertyValue('--inherited')` !!
 - under 2k gziped, who would have thought that?
 
 ## todo
 - ~~dynamic added --variables are not inherited yet~~
 - ~~getComputedStyle(el).getPropertyValue() will not get inherited values yet~~
-- listen for mouseenter/mouseleave to support `hover:`
+- ~~listen for mouseenter/mouseleave to support hover:~~
 
 ## limitations
 - styles in element-attributes can not be handled `<div style="--color:blue">`, I could implement that if someone needs it: `<div style="--color:blue; -ie-color:blue">`
