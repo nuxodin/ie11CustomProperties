@@ -22,7 +22,7 @@
 
     if (!w.c1) w.c1 = {};
     var listeners = [],
-        root = document.documentElement,
+        root = document,
         Observer;
 
     c1.onElement = function (selector, options/*, disconnectedCallback*/) {
