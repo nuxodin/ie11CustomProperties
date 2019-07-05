@@ -7,6 +7,7 @@ Custom Properties polyfill for IE11
 - handle dynamic added html-content
 - cascade works
 - inheritance works
+- chaining `--bar:var(--foo)`
 - fallback works `var(--color, blue)`
 - :focus, :active, :hover
 - js-integration:  
