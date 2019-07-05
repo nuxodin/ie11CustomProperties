@@ -29,5 +29,5 @@ Custom Properties polyfill for IE11
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/49e4bc55408c81386cb2e627fe65cfa153b77bea/test.html?v4
 
 ## help needed!
-Please test and report bugs
-And add a ⭐️ or tweet about if you like it.
+Please test and report bugs.  
+And add a ⭐️ and tweet about if you like it.
