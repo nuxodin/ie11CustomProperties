@@ -23,7 +23,7 @@ I could implement the following if someone needs it:
 `<div style="--color:blue; -ie-color:blue">` OR `<div style="--color:blue" ie-style="--color:blue">` what do you prefer?
 ### specificity for properties containing "var()"
 ...is always little highter, cause each selector gets an additional class-selector  
-eg. `#header` results in `#header.iecp_u44`)
+eg. `#header` results in `#header.iecp_u44`
 
 ## Demo:
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/450c5a1ba1064679d6d6fe60681dd43a08439800/test.html
