@@ -17,8 +17,7 @@ Custom Properties polyfill for IE11
 - under 2k gziped, who would have thought that?
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/450c5a1ba1064679d6d6fe60681dd43a08439800/test.html
-
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/2ba50775d45dcf80bd071c31e136bcbc2dc720bc/test.html
 
 ## Limitations
 ### styles in element-attributes
