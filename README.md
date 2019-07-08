@@ -8,8 +8,8 @@ Custom Properties polyfill for IE11
 - cascade works
 - inheritance works
 - chaining `--bar:var(--foo)`
-- fallback works `var(--color, blue)`
-- :focus, :active, :hover
+- fallback `var(--color, blue)`
+- :focus, :target, :hover
 - js-integration:  
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
