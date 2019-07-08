@@ -18,7 +18,7 @@ Custom Properties polyfill for IE11
 
 ## Limitations
 ### styles in element-attributes
-There is no way to get the raw content of style-attributes in IE11 `<div style="--color:blue">`  
+There is no way to get the raw content of style-attributes in IE11
 I could implement the following if someone needs it: 
 `<div style="--color:blue; -ie-color:blue">` OR `<div style="--color:blue" ie-style="--color:blue">` what do you prefer?
 ### specificity for properties containing "var()"
