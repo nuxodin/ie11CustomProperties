@@ -102,11 +102,12 @@
 	if (docElSty.getPropertyValue('--x') === 'y') return;
 
 	// cached regexps, better performance?
-	const regFindSetters = /(--([^;}]+:[^;}]+))/g;
+	const regFindSetters = /(--([^;}]+:[^;!}]+)(!important)?)/g;
 	const regFindGetters = /([{;][\s]*)(.+:.*var\(([^;}]*))/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
+	const regPseudos = /:(hover|active|focus|target|:before|:after)/;
 
 	c1.onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
@@ -127,6 +128,7 @@
 	});
 
 	function rewriteCss(css) {
+		//css = css.replace(regFindSetters, function(x, y, propVal, important){ return '-ie-'+propVal+(important?'ie-important':'')}); // todo: !imporant
 		css = css.replace(regFindSetters, '-ie-$2');
 		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
@@ -157,7 +159,7 @@
 
 	function addGettersSelector(selector, properties) {
 		selectorAddPseudoListeners(selector);
-		const selectorWithoutPseudo = selector.replace(/:(hover|active|focus|target)/,'');
+		var selectorWithoutPseudo = selector.replace(regPseudos,'');
 		c1.onElement(selectorWithoutPseudo, function (el) {
 			elementAddGetters(el, properties, selector);
 		});
@@ -166,13 +168,22 @@
 		el.setAttribute('iecp-needed', true);
 		if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
 		for (var i = 0, prop; prop = properties[i++];) {
-			el.ieCPsNeeded[prop] = selector; // multiple selectors?
+			const parts = selector.trim().split('::');
+			el.ieCPsNeeded[prop] = {
+				selector: parts[0],
+				pseudo: parts[1] ? '::'+parts[1] : '',
+			};
+			// if (!el.ieCPsNeeded[prop]) el.ieCPsNeeded[prop] = []; // multiple useful?
+			// el.ieCPsNeeded[prop].push({
+			// 	selector: parts[0],
+			// 	pseudo: parts[1] ? '::'+parts[1] : '',
+			// });
 		}
 		drawElement(el)
 	}
 	function addSettersSelector(selector, propVals) {
 		selectorAddPseudoListeners(selector);
-		const selectorWithoutPseudo = selector.replace(/:(hover|active|focus|target)/,'');
+		const selectorWithoutPseudo = selector.replace(regPseudos,'');
 		c1.onElement(selectorWithoutPseudo, function (el) {
 			elementAddSetters(el, propVals);
 		});
@@ -228,11 +239,18 @@
 		var style = getComputedStyle(el);
 		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPsNeeded) {
-			var selector = el.ieCPsNeeded[prop]; // selector needed to make a style-rule with the same specificity
 			var valueWithVar = style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
-			el.ieCP_sheet.insertRule(selector.trim() + '.iecp-u' + el.ieCP_unique + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+
+			// for (var i=0, item; item=el.ieCPsNeeded[prop][i++];) { // multiple, useful?
+			// 	console.log(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}')
+			// 	el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+			// }
+
+			const item = el.ieCPsNeeded[prop];
+			el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+
 			//el.style[prop] = value; // element inline-style: strong specificity
 		}
 	}
