@@ -80,7 +80,7 @@
         while (listener = listeners[i++]) checkListener(listener, inside);
     }
     function checkMutations(mutations) {
-        var j = 0, i, mutation, nodes, target;
+		var j = 0, i, mutation, nodes, target;
         while (mutation = mutations[j++]) {
             nodes = mutation.addedNodes, i = 0;
             while (target = nodes[i++]) target.nodeType === 1 && checkListeners(target);
@@ -127,8 +127,6 @@
 	});
 
 	function rewriteCss(css) {
-		//css = css.replace(regFindSetters, '-ie-$2; $1');
-		//return css.replace(regFindGetters, '$1-ieVar-$2');
 		css = css.replace(regFindSetters, '-ie-$2');
 		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
@@ -158,8 +156,10 @@
 	}
 
 	function addGettersSelector(selector, properties) {
-		c1.onElement(selector, function (el) {
-			elementAddGetters(el, properties, selector)
+		selectorAddPseudoListeners(selector);
+		const selectorWithoutPseudo = selector.replace(/:(hover|active|focus|target)/,'');
+		c1.onElement(selectorWithoutPseudo, function (el) {
+			elementAddGetters(el, properties, selector);
 		});
 	}
 	function elementAddGetters(el, properties, selector) {
@@ -168,33 +168,12 @@
 		for (var i = 0, prop; prop = properties[i++];) {
 			el.ieCPsNeeded[prop] = selector; // multiple selectors?
 		}
+		drawElement(el)
 	}
 	function addSettersSelector(selector, propVals) {
-		// var els = document.querySelectorAll(selector); // works without inheritance
-
-		var parts = selector.split(':hover');
-		if (parts.length > 1) {
-			c1.onElement(parts[0], function (el) {
-				el.addEventListener('mouseenter', drawTreeEvent);
-				el.addEventListener('mouseleave', drawTreeEvent);
-			});
-		}
-		var parts = selector.split(':focus');
-		if (parts.length > 1) {
-			c1.onElement(parts[0], function (el) {
-				el.addEventListener('focusin', drawTreeFocusInEvent);
-				el.addEventListener('focusout', drawTreeEvent);
-			});
-		}
-		var parts = selector.split(':active');
-		if (parts.length > 1) {
-			c1.onElement(parts[0], function (el) {
-				el.addEventListener('focusin', drawTreeFocusInEvent);
-				el.addEventListener('focusout', drawTreeEvent);
-			});
-		}
-
-		c1.onElement(selector, function (el) {
+		selectorAddPseudoListeners(selector);
+		const selectorWithoutPseudo = selector.replace(/:(hover|active|focus|target)/,'');
+		c1.onElement(selectorWithoutPseudo, function (el) {
 			elementAddSetters(el, propVals);
 		});
 	}
@@ -205,6 +184,34 @@
 		}
 		drawTree(el);
 	}
+
+	const pseudos = {
+		hover:{
+			on:'mouseenter',
+			off:'mouseleave',
+		},
+		focus:{
+			on:'focusin',
+			off:'focusout',
+		},
+		active:{
+			on:'mousedown',
+			off:'mouseup',
+		}
+	};
+	function selectorAddPseudoListeners(selector){
+		for (var pseudo in pseudos) {
+			var parts = selector.split(':'+pseudo);
+			if (parts.length > 1) {
+				const listeners = pseudos[pseudo];
+				c1.onElement(parts[0], function (el) {
+					el.addEventListener(listeners.on, drawTreeEvent);
+					el.addEventListener(listeners.off, drawTreeEvent);
+				});
+			}
+		}
+	}
+
 
 	var uniqueCounter = 0;
 
@@ -223,6 +230,7 @@
 		for (var prop in el.ieCPsNeeded) {
 			var selector = el.ieCPsNeeded[prop]; // selector needed to make a style-rule with the same specificity
 			var valueWithVar = style['-ieVar-' + prop];
+			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 			el.ieCP_sheet.insertRule(selector.trim() + '.iecp-u' + el.ieCP_unique + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
 			//el.style[prop] = value; // element inline-style: strong specificity
@@ -240,22 +248,15 @@
 	}
 
 	function drawTree(target) {
+		if (!target) return;
 		requestAnimationFrame(function () {
-			//console.time('test1')
 			var els = target.querySelectorAll('[iecp-needed]');
-			if (target.hasAttribute('iecp-needed')) drawElement(target); // self
+			if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
 			for (var i = 0, el; el = els[i++];) drawElement(el); // tree
-			//console.timeEnd('test1')
-		})
+		});
 	}
 	function drawTreeEvent(e) {
 		drawTree(e.target)
-	}
-	function drawTreeFocusInEvent(e) {
-		drawTree(e.target)
-		setTimeout(function () {
-			drawTree(e.target)
-		}, 100);
 	}
 
 	// listeners, todo
@@ -271,6 +272,18 @@
 	// 	setInterval(function(){
 	// 		drawTree(document.documentElement);
 	// 	},200);
+	var oldHash = location.hash
+	addEventListener('hashchange',function(e){
+		var newEl = document.getElementById(location.hash.substr(1));
+		if (newEl) {
+			var oldEl = document.getElementById(oldHash.substr(1));
+			drawTree(newEl);
+			drawTree(oldEl);
+		} else {
+			drawTree(document);
+		}
+		oldHash = location.hash;
+	})
 
 	// add owningElement to Element.style
 	var descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'style');
@@ -345,7 +358,7 @@
 					const el = this.owningElement;
 					if (!el.ieCP_setters) el.ieCP_setters = {};
 					el.ieCP_setters[property] = 1;
-					// drawTree(el); // todo
+					drawTree(el); // todo
 				}
 
 				property = property.replace(regStartingVar, '-ie-');

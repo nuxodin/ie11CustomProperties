@@ -4,54 +4,145 @@
   <meta charset="utf-8">
   <title>CSS Custom Properties IE11 Test</title>
   <script src="./ie11CustomProperties.js"></script>
-<body class="theme1">
+<body>
 
-  <style>
-  body > * {
-    float:left;
-    width:300px;
-    height:300px;
-    margin:3em;
-    padding:3em;
-  }
-  .theme1 {
-    --theme-color:#f7a901;
-  }
-  .theme2 {
-    --theme-color:#a9f701;
-  }
-  .theme2:hover {
-    --theme-color:#a901f7;
-  }
-  a {
-    color:var(--theme-color);
-  }
-  h2 {
-    border-bottom:1px solid var(--theme-color);
-  }
-  input {
-    background:var(--theme-color);
-  }
-  input:focus {
-    --theme-color:#000;
-    color:#fff;
-  }
-  </style>
+<style>
+body {
+  --theme-color:orange;
+  display:flex;
+  flex-wrap:wrap;
+}
+body > * {
+  max-width:500px;
+  margin:2rem;
+  padding:2rem;
+  overflow:auto;
+  border:2px solid var(--theme-color);
+}
+h2 {
+  border-bottom:2px solid var(--theme-color);
+}
+a {
+  color:var(--theme-color);
+}
+button {
+  background-color:var(--theme-color);
+}
+pre {
+  color:#fff;
+  background-color:var(--theme-color);
+  font-size:13px;
+  padding:1em;
+  overflow:auto;
+}
+</style>
 
-  <h2>Title</h2>
-  <a href="#">just a link</a>
-  <input type="text">
-  <script>
-    var a = document.createElement('a');
-    a.href = '#';
-    a.innerHTML = 'dynamic added link'
-    document.body.appendChild(a);
-  </script>
-  <div class="theme2">
-    <h2>hover me!</h2>
-    <a href="#">just a link</a>
-    <input type="text">
+  <div id=pseudoClasses tabindex=0>
+      <h2>Pseudo-classes (:hover, :focus, :target)</h2>
+      <ul>
+          <li class=hasHover>Has Hover</li>
+          <li class=hasTarget>Has Target</li>
+          <li class=hasFocus>Has Focus</li>
+      </ul>
+      <a href="#pseudoClasses">target to #pseudoClasses</a><br>
+      <a href="#">click to set target #</a><br>
+<style>
+#pseudoClasses:hover .hasHover,
+#pseudoClasses:target .hasTarget,
+#pseudoClasses:focus .hasFocus {
+  background:var(--theme-color);
+}
+</style>
   </div>
-  <script>
-    !document.body.msMatchesSelector && alert("Visit this Page in IE11!");
-  </script>
+
+
+
+  <div id=chaining>
+      <h2>Chaining</h2>
+<style>
+#chaining {
+  --a:var(--theme-color);
+  --b:var(--a);
+  background-color:var(--b);
+}
+#chaining:hover {
+  --a:transparent;
+}
+</style>
+</div>
+
+<div id=fallback>
+    <h2>Fallback</h2>
+<style>
+#fallback {
+  --theme-color:var(--not_defined, green);
+}
+</style>
+</div>
+
+
+<div id=jsIntegration>
+    <h2>JS-Integration</h2>
+    <button onclick="setThemeColor('red')">onclick="setThemeColor('red')"</button><br>
+    <button onclick="setThemeColor('orange')">onclick="setThemeColor('orange')"</button><br>
+    <br>
+    <button onclick="getThemeColor(this)">onclick="getThemeColor(this)"</button>
+<script>
+function setThemeColor(color) {
+  document.body.style.setProperty('--theme-color', color);
+}
+function getThemeColor(element) {
+  const computed = getComputedStyle(element);
+  const color = computed.getPropertyValue('--theme-color');
+  alert(color);
+}
+</script>
+</div>
+
+
+<div id=dynamicStyle>
+    <h2>dynamic added style-element</h2>
+    <button onclick="addStyleElememt()">
+        onclick="addStyleElememt()"
+    </button>
+<script>
+function addStyleElememt(){
+  var el = document.createElement('style');
+  var color = (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+  el.innerHTML =
+    '#dynamicStyle { '+
+      '--theme-color: #'+color+';'+
+    '}';
+  dynamicStyle.appendChild(el);
+}
+</script>
+  </div>
+
+  <div id="dynamicContent">
+      <h2>Dynamic Content</h2>
+      <button onclick="setContent()">onclick="setContent()"</button>
+<script>
+function setContent(){
+  var content = dynamicContent.innerHTML;
+  dynamicContent.innerHTML = '';
+  setTimeout(function(){
+    dynamicContent.innerHTML = content;
+  },500)
+}
+</script>
+  </div>
+
+
+
+<script hidden>
+  !document.body.msMatchesSelector && alert("Visit this Page in IE11!");
+  var styleElements = document.querySelectorAll('style, script:not([hidden])');
+  for (var i=0, styleElement; styleElement = styleElements[i++];) {
+    const pre = document.createElement('pre');
+    pre.innerHTML = htmlEntities(styleElement.innerHTML);
+    styleElement.parentNode.insertBefore(pre, styleElement);
+  }
+  function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
