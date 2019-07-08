@@ -17,14 +17,14 @@ Custom Properties polyfill for IE11
 - under 2k gziped, who would have thought that?
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/450c5a1ba1064679d6d6fe60681dd43a08439800/test.html
-
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/2ba50775d45dcf80bd071c31e136bcbc2dc720bc/test.html
 
 ## Limitations
 ### styles in element-attributes
 There is no way to get the raw content of style-attributes in IE11
-I could implement the following if someone needs it: 
-`<div style="--color:blue; -ie-color:blue">` OR `<div style="--color:blue" ie-style="--color:blue">` what do you prefer?
+I could implement one of these variants: 
+- `<div style="--color:blue" ie-style="--color:blue">` advantage: faster because I can query for `[ie-style]`  
+- `<div style="--color:blue; -ie-color:blue">` advantage: less code  
 ### specificity for properties containing "var()"
 ...is always little highter, cause each selector gets an additional class-selector  
 eg. `#header` results in `#header.iecp_u44`
