@@ -1,3 +1,4 @@
+/* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
 // Helpers / needed Polyfills
 !function () {
     'use strict';
