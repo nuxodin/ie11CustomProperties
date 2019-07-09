@@ -15,7 +15,7 @@ The most comprehensive polyfill for Custom Properties in IE11
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')` !!
 - style-attributes `<div ie-style="--foo:bar"`
-- under 2k (min+gzip) and Lightweight dependency-free, who would have thought that?
+- under 3k (min+gzip) and Lightweight dependency-free, who would have thought that?
 
 ## Demo:
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/16836601aad3e1e4a1f039e12aa48355d0cd08bb/test.html
