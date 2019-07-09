@@ -22,8 +22,9 @@ https://rawcdn.githack.com/nuxodin/ie11CustomProperties/2ba50775d45dcf80bd071c31
 
 ## Limitations
 ### styles in element-attributes
-There is no way to get the raw content of style-attributes in IE11
+There is no way to get the raw content of style-attributes in IE11.  
 Use `<div style="--color:blue" ie-style="--color:blue">` for it
+
 ### specificity for properties containing "var()"
 ...is always little highter, cause each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
