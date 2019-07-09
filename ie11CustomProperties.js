@@ -104,13 +104,14 @@
 
 	// cached regexps, better performance?
 	const regFindSetters = /(--([^;}]+:[^;!}]+)(!important)?)/g;
-	const regFindGetters = /([{;][\s]*)(.+:.*var\(([^;}]*))/g;
+	//const regFindGetters = /([{;]\s*)(.+:.*var\(([^;}]*))/g;
+	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
 	const regPseudos = /:(hover|active|focus|target|:before|:after)/;
 
-	c1.onElement('link[rel="stylesheet"]', function (el) {
+	c1.onElement('link[rel="stylesheet"]', {immediate:function (el) {
 		fetchCss(el.href, function (css) {
 			var newCss = rewriteCss(css);
 			if (css === newCss) return;
@@ -119,42 +120,56 @@
 			el.after(style);
 			activateStyleElement(style, newCss);
 		});
-	});
-	c1.onElement('style', function (el) {
+	}});
+	c1.onElement('style', {immediate:function (el) {
 		if (el.hasAttribute('ie-polyfilled')) return;
 		var css = el.innerHTML;
 		var newCss = rewriteCss(css);
 		if (css === newCss) return;
 		activateStyleElement(el, newCss);
-	});
+	}});
+	c1.onElement('[ie-style]', {immediate:function (el) {
+		var newCss = rewriteCss('{'+el.getAttribute('ie-style')).substr(1);
+		el.style.cssText += ';'+ newCss;
+		var found = parseRewrittenCssText(newCss);
+		if (found.getters) elementAddGetters(el, found.getters, '%styleAttr');
+		if (found.setters) elementAddSetters(el, found.setters);
+	}});
 
+	// ie has a bug, where unknown properties at pseudo-selectors are computed at the element
+	// #el::after { -content:'x'; } => getComputedStyle(el)['-content'] == 'x'
+	// should we add something like -ieVar-pseudo_after-content:'x'?
 	function rewriteCss(css) {
 		//css = css.replace(regFindSetters, function(x, y, propVal, important){ return '-ie-'+propVal+(important?'ie-important':'')}); // todo: !imporant
 		css = css.replace(regFindSetters, '-ie-$2');
 		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
+	}
+	function parseRewrittenCssText(cssText){
+		var matchesGetters = cssText.match(regRuleIEGetters);
+		if (matchesGetters) {
+			var getters = []; // eg. [border,color]
+			for (var j = 0, match; match = matchesGetters[j++];) {
+				getters.push(match.slice(7, -1));
+			}
+		}
+		var matchesSetters = cssText.match(regRuleIESetters);
+		if (matchesSetters) {
+			var setters = {};// beta eg. [--color:#fff, --padding:10px];
+			for (var j = 0, match; match = matchesSetters[j++];) {
+				var x = match.substr(4).split(':');
+				setters[x[0]] = x[1];
+			}
+		}
+		return {getters:getters, setters:setters};
 	}
 	function activateStyleElement(style, css) {
 		style.innerHTML = css;
 		style.setAttribute('ie-polyfilled', true);
 		var rules = style.sheet.rules || style.sheet.cssRules;
 		for (var i = 0, rule; rule = rules[i++];) {
-			var matchesGetters = rule.cssText.match(regRuleIEGetters);
-			if (matchesGetters) {
-				var properties = []; // eg. [border,color]
-				for (var j = 0, match; match = matchesGetters[j++];) {
-					properties.push(match.slice(7, -1));
-				}
-				addGettersSelector(rule.selectorText, properties);
-			}
-			var matchesSetters = rule.cssText.match(regRuleIESetters);
-			if (matchesSetters) {
-				var propVals = {};// beta eg. [--color:#fff, --padding:10px];
-				for (var j = 0, match; match = matchesSetters[j++];) {
-					var x = match.substr(4).split(':');
-					propVals[x[0]] = x[1];
-				}
-				addSettersSelector(rule.selectorText, propVals);
-			}
+			const found = parseRewrittenCssText(rule.cssText)
+			if (found.getters) addGettersSelector(rule.selectorText, found.getters);
+			if (found.setters) addSettersSelector(rule.selectorText, found.setters);
 		}
 	}
 
@@ -227,7 +242,7 @@
 
 	var uniqueCounter = 0;
 
-	function drawElement(el) {
+	function _drawElement(el) {
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
 			el.classList.add('iecp-u' + el.ieCP_unique);
@@ -240,6 +255,7 @@
 		var style = getComputedStyle(el);
 		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPsNeeded) {
+			const item = el.ieCPsNeeded[prop];
 			var valueWithVar = style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
@@ -249,20 +265,29 @@
 			// 	el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
 			// }
 
-			const item = el.ieCPsNeeded[prop];
-			el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
-
-			//el.style[prop] = value; // element inline-style: strong specificity
+			if (item.selector === '%styleAttr') {
+				el.style[prop] = value; // element inline-style
+			} else {
+				el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+			}
 		}
 	}
 	function drawTree(target) {
 		if (!target) return;
-		requestAnimationFrame(function () {
-			var els = target.querySelectorAll('[iecp-needed]');
-			if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
-			for (var i = 0, el; el = els[i++];) drawElement(el); // tree
-		});
+		var els = target.querySelectorAll('[iecp-needed]');
+		if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
+		for (var i = 0, el; el = els[i++];) drawElement(el); // tree
 	}
+	let drawQueue = {};
+	function drawElement(el){
+		drawQueue[el.uniqueNumber] = el;
+		requestAnimationFrame(function(){
+			for (var nr in drawQueue) _drawElement(drawQueue[nr]);
+			drawQueue = {};
+		})
+	}
+
+
 	function drawTreeEvent(e) {
 		drawTree(e.target)
 	}
@@ -318,6 +343,7 @@
 	window.getComputedStyle = function (el) {
 		var style = originalGetComputed.apply(this, arguments);
 		style.computedFor = el;
+		//style.pseudoElt = pseudoElt; //not needed at the moment
 		return style;
 	}
 
@@ -338,7 +364,8 @@
 						}
 					} else {
 						// inherited
-						var el = this.computedFor.parentNode;
+						//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
+						let el = this.computedFor.parentNode;
 						while (el.nodeType === 1) {
 							// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
 							if (el.ieCP_setters && el.ieCP_setters[property]) {
@@ -376,7 +403,7 @@
 					const el = this.owningElement;
 					if (!el.ieCP_setters) el.ieCP_setters = {};
 					el.ieCP_setters[property] = 1;
-					drawTree(el); // todo
+					drawTree(el);
 				}
 
 				property = property.replace(regStartingVar, '-ie-');

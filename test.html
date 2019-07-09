@@ -36,7 +36,7 @@ pre {
   overflow:auto;
 }
 </style>
-  
+
   <div id=pseudoClasses tabindex=0>
       <h2>Pseudo-classes (:hover, :focus, :target)</h2>
       <ul>
@@ -80,16 +80,28 @@ pre {
 </style>
 </div>
 
-<div id=before_after>
-    <h2>::before, ::after</h2>
+<div id=before>
+    <h2>Pseudo-Elements</h2>
 <style>
-#before_after {
-  --content:' ★ ';
+#before > h2 {
+  --before:' 👉 ';
 }
-#before_after > h2::after {
-  content:var(--content);
+#before > h2::before  {
+  content:var(--before);
 }
 </style>
+</div>
+
+<div id=style_attribute>
+    <h2>ie-style attributes</h2>
+    <div style="background-color:var(--theme-color); --inner:white; padding:10px" ie-style="background-color:var(--theme-color); --inner:white">
+      <pre>ie-style="
+background-color:var(--theme-color);
+--inner:white"</pre>
+      <pre style="background:var(--inner); color:var(--theme-color)" ie-style="background:var(--inner); color:var(--theme-color)">
+ie-style="background:var(--inner);
+color:var(--theme-color)"</pre>
+    </div>
 </div>
 
 
@@ -151,7 +163,10 @@ function setContent(){
   var styleElements = document.querySelectorAll('style, script:not([hidden])');
   for (var i=0, styleElement; styleElement = styleElements[i++];) {
     const pre = document.createElement('pre');
-    pre.innerHTML = htmlEntities(styleElement.innerHTML);
+    var contents = styleElement.innerHTML;
+    contents = contents.replace(/-ie-/g, '--');
+    contents = contents.replace(/-ieVar-[^;]+(;)?( )?/g, '');
+    pre.innerHTML = htmlEntities(contents);
     styleElement.parentNode.insertBefore(pre, styleElement);
   }
   function htmlEntities(str) {
