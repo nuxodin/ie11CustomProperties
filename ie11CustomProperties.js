@@ -255,17 +255,6 @@
 			//el.style[prop] = value; // element inline-style: strong specificity
 		}
 	}
-
-	const regValueGetters = /var\(([^),]+)(\,(.+))?\)/g;
-	function styleComputeValueWidthVars(style, valueWithVar){
-		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
-			variable = variable.trim();
-			var pValue = style.getPropertyValue(variable);
-			if (pValue === undefined && fallback !== undefined) pValue = fallback.trim(); // fallback
-			return pValue;
-		});
-	}
-
 	function drawTree(target) {
 		if (!target) return;
 		requestAnimationFrame(function () {
@@ -276,6 +265,16 @@
 	}
 	function drawTreeEvent(e) {
 		drawTree(e.target)
+	}
+
+	const regValueGetters = /var\(([^),]+)(\,(.+))?\)/g;
+	function styleComputeValueWidthVars(style, valueWithVar){
+		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
+			variable = variable.trim();
+			var pValue = style.getPropertyValue(variable);
+			if (pValue === undefined && fallback !== undefined) pValue = fallback.trim(); // fallback
+			return pValue;
+		});
 	}
 
 	// listeners, todo
@@ -396,12 +395,7 @@
 		request.onload = function () {
 			if (request.status >= 200 && request.status < 400) {
 				callback(request.responseText);
-			} else {
-				console.warn('an error was returned from:', url);
 			}
-		};
-		request.onerror = function () {
-			console.warn('we could not get anything from:', url);
 		};
 		request.send();
 	}
