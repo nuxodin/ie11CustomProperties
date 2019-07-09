@@ -14,7 +14,7 @@ Custom Properties polyfill for IE11
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')` !!
-- under 2k gziped, who would have thought that?
+- under 2k (min+gzip) and Lightweight dependency-free, who would have thought that?
 
 ## Demo:
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/2ba50775d45dcf80bd071c31e136bcbc2dc720bc/test.html
