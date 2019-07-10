@@ -282,7 +282,7 @@
 			collecting = false;
 			drawing = true;
 			for (var nr in drawQueue) _drawElement(drawQueue[nr]);
-			requestAnimationFrame(function(){ // mutationObserver will trigger
+			requestAnimationFrame(function(){ // mutationObserver will trigger delayed
 				drawing = false;
 			})
 			drawQueue = {};
