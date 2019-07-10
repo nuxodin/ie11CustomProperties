@@ -278,10 +278,15 @@
 		if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
 		for (var i = 0, el; el = els[i++];) drawElement(el); // tree
 	}
+	// draw queue
 	let drawQueue = {};
+	let drawCollecting = false;
 	function drawElement(el){
 		drawQueue[el.uniqueNumber] = el;
+		if (drawCollecting) return;
+		drawCollecting = true;
 		requestAnimationFrame(function(){
+			drawCollecting = false;
 			for (var nr in drawQueue) _drawElement(drawQueue[nr]);
 			drawQueue = {};
 		})
