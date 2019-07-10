@@ -185,15 +185,11 @@
 		if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
 		for (var i = 0, prop; prop = properties[i++];) {
 			const parts = selector.trim().split('::');
-			el.ieCPsNeeded[prop] = {
+			if (!el.ieCPsNeeded[prop]) el.ieCPsNeeded[prop] = [];
+			el.ieCPsNeeded[prop].push({
 				selector: parts[0],
 				pseudo: parts[1] ? '::'+parts[1] : '',
-			};
-			// if (!el.ieCPsNeeded[prop]) el.ieCPsNeeded[prop] = []; // multiple useful?
-			// el.ieCPsNeeded[prop].push({
-			// 	selector: parts[0],
-			// 	pseudo: parts[1] ? '::'+parts[1] : '',
-			// });
+			});
 		}
 		drawElement(el)
 	}
@@ -255,20 +251,16 @@
 		var style = getComputedStyle(el);
 		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPsNeeded) {
-			const item = el.ieCPsNeeded[prop];
 			var valueWithVar = style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 
-			// for (var i=0, item; item=el.ieCPsNeeded[prop][i++];) { // multiple, useful?
-			// 	console.log(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}')
-			// 	el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
-			// }
-
-			if (item.selector === '%styleAttr') {
-				el.style[prop] = value; // element inline-style
-			} else {
-				el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+			for (var i=0, item; item=el.ieCPsNeeded[prop][i++];) {
+				if (item.selector === '%styleAttr') {
+					el.style[prop] = value;
+				} else {
+					el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+				}
 			}
 		}
 	}
