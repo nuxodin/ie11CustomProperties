@@ -1,5 +1,5 @@
 # CSS Variables for IE11
-The most comprehensive polyfill for Custom Properties in IE11
+A comprehensive polyfill for Custom Properties in IE11
 
 
 ## It can:
@@ -14,7 +14,7 @@ The most comprehensive polyfill for Custom Properties in IE11
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')` !!
-- style-attributes `<div ie-style="--foo:bar"`
+- style-attributes `<div ie-style="--foo:bar"...`
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
