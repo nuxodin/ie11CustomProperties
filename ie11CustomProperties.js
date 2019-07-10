@@ -272,14 +272,19 @@
 	}
 	// draw queue
 	let drawQueue = {};
-	let drawCollecting = false;
+	let collecting = false;
+	let drawing = false;
 	function drawElement(el){
 		drawQueue[el.uniqueNumber] = el;
-		if (drawCollecting) return;
-		drawCollecting = true;
+		if (collecting) return;
+		collecting = true;
 		requestAnimationFrame(function(){
-			drawCollecting = false;
+			collecting = false;
+			drawing = true;
 			for (var nr in drawQueue) _drawElement(drawQueue[nr]);
+			requestAnimationFrame(function(){ // mutationObserver will trigger
+				drawing = false;
+			})
 			drawQueue = {};
 		})
 	}
@@ -299,19 +304,19 @@
 		});
 	}
 
-	// listeners, todo
-	// var observer = new MutationObserver(function(mutations) {
-	// 	for (var i, mutation; mutation=mutations[i++];) {
-	// 		drawTree(mutation.target)
-	// 	}
-	// });
-	// observer.observe(document.documentElement, {
-	// 	attributes: true,
-	// 	subtree: true
-	// });
-	// 	setInterval(function(){
-	// 		drawTree(document.documentElement);
-	// 	},200);
+	// mutation listener
+	var observer = new MutationObserver(function(mutations) {
+		if (drawing) return;
+		for (var i=0, mutation; mutation=mutations[i++];) {
+			if (mutation.attributeName === 'ie-polyfilled') continue;
+			if (mutation.attributeName === 'iecp-needed') continue;
+//			console.log(mutation.target)
+			drawTree(mutation.target)
+		}
+	});
+	observer.observe(document,{attributes: true, subtree: true });
+
+	// :target listener
 	var oldHash = location.hash
 	addEventListener('hashchange',function(e){
 		var newEl = document.getElementById(location.hash.substr(1));
