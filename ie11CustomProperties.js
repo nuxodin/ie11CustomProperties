@@ -131,9 +131,9 @@
 	c1.onElement('[ie-style]', {immediate:function (el) {
 		var newCss = rewriteCss('{'+el.getAttribute('ie-style')).substr(1);
 		el.style.cssText += ';'+ newCss;
-		var found = parseRewrittenCssText(newCss);
-		if (found.getters) elementAddGetters(el, found.getters, '%styleAttr');
-		if (found.setters) elementAddSetters(el, found.setters);
+		var found = parseRewrittenCss(newCss);
+		if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
+		if (found.setters) addSetterElement(el, found.setters);
 	}});
 
 	// ie has a bug, where unknown properties at pseudo-selectors are computed at the element
@@ -144,7 +144,7 @@
 		css = css.replace(regFindSetters, '-ie-$2');
 		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
-	function parseRewrittenCssText(cssText){
+	function parseRewrittenCss(cssText){
 		var matchesGetters = cssText.match(regRuleIEGetters);
 		if (matchesGetters) {
 			var getters = []; // eg. [border,color]
@@ -167,7 +167,7 @@
 		style.setAttribute('ie-polyfilled', true);
 		var rules = style.sheet.rules || style.sheet.cssRules;
 		for (var i = 0, rule; rule = rules[i++];) {
-			const found = parseRewrittenCssText(rule.cssText)
+			const found = parseRewrittenCss(rule.cssText)
 			if (found.getters) addGettersSelector(rule.selectorText, found.getters);
 			if (found.setters) addSettersSelector(rule.selectorText, found.setters);
 		}
@@ -177,49 +177,45 @@
 		selectorAddPseudoListeners(selector);
 		var selectorWithoutPseudo = selector.replace(regPseudos,'');
 		c1.onElement(selectorWithoutPseudo, function (el) {
-			elementAddGetters(el, properties, selector);
+			addGetterElement(el, properties, selector);
+			drawElement(el);
 		});
 	}
-	function elementAddGetters(el, properties, selector) {
+	function addGetterElement(el, properties, selector) {
 		el.setAttribute('iecp-needed', true);
-		if (!el.ieCPsNeeded) el.ieCPsNeeded = {};
+		if (!el.ieCPSelectors) el.ieCPSelectors = {};
 		for (var i = 0, prop; prop = properties[i++];) {
 			const parts = selector.trim().split('::');
-			if (!el.ieCPsNeeded[prop]) el.ieCPsNeeded[prop] = [];
-			el.ieCPsNeeded[prop].push({
+			if (!el.ieCPSelectors[prop]) el.ieCPSelectors[prop] = [];
+			el.ieCPSelectors[prop].push({
 				selector: parts[0],
 				pseudo: parts[1] ? '::'+parts[1] : '',
 			});
 		}
-		drawElement(el)
 	}
 	function addSettersSelector(selector, propVals) {
 		selectorAddPseudoListeners(selector);
 		const selectorWithoutPseudo = selector.replace(regPseudos,'');
 		c1.onElement(selectorWithoutPseudo, function (el) {
-			elementAddSetters(el, propVals);
+			addSetterElement(el, propVals);
+			drawTree(el);
 		});
 	}
-	function elementAddSetters(el, propVals) {
+	function addSetterElement(el, propVals) {
 		if (!el.ieCP_setters) el.ieCP_setters = {};
 		for (var prop in propVals) { // {foo:#fff, bar:baz}
 			el.ieCP_setters['--' + prop] = 1;
 		}
-		drawTree(el);
 	}
 
 	const pseudos = {
 		hover:{
 			on:'mouseenter',
-			off:'mouseleave',
+			off:'mouseleave'
 		},
 		focus:{
 			on:'focusin',
-			off:'focusout',
-		},
-		active:{
-			on:'mousedown',
-			off:'mouseup',
+			off:'focusout'
 		}
 	};
 	function selectorAddPseudoListeners(selector){
@@ -250,12 +246,12 @@
 		}
 		var style = getComputedStyle(el);
 		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
-		for (var prop in el.ieCPsNeeded) {
+		for (var prop in el.ieCPSelectors) {
 			var valueWithVar = style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 
-			for (var i=0, item; item=el.ieCPsNeeded[prop][i++];) {
+			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) {
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
 				} else {
@@ -310,11 +306,13 @@
 		for (var i=0, mutation; mutation=mutations[i++];) {
 			if (mutation.attributeName === 'ie-polyfilled') continue;
 			if (mutation.attributeName === 'iecp-needed') continue;
-//			console.log(mutation.target)
-			drawTree(mutation.target)
+			// recheck all selectors if it targets new elements?
+			drawTree(mutation.target);
 		}
 	});
-	observer.observe(document,{attributes: true, subtree: true });
+	setTimeout(function(){
+		observer.observe(document,{attributes: true, subtree: true });
+	})
 
 	// :target listener
 	var oldHash = location.hash
@@ -329,6 +327,22 @@
 		}
 		oldHash = location.hash;
 	})
+	/*
+	// :active listener, on(de)activate, but wrong Elements can get activeElement
+	var oldActive = false;
+	document.addEventListener('activate',function(e){
+		const el = e.target;
+		if (
+			'form' in el
+			|| el.isContentEditable
+			|| el.hasAttribute('tabindex')
+			|| el.tagName === 'A'
+		) {
+			console.log(el)
+			oldActive = el;
+		}
+	})
+	*/
 
 	// add owningElement to Element.style
 	var descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'style');

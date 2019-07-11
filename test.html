@@ -37,29 +37,29 @@ pre {
 }
 </style>
 
-  <div id=pseudoClasses tabindex=0>
-      <h2>Pseudo-classes (:hover, :focus, :target)</h2>
-      <ul>
-          <li class=hasHover>Has Hover</li>
-          <li class=hasTarget>Has Target</li>
-          <li class=hasFocus>Has Focus</li>
-      </ul>
-      <a href="#pseudoClasses">target to #pseudoClasses</a><br>
-      <a href="#">click to set target #</a><br>
-<style>
+<div id=pseudoClasses tabindex=0>
+  <h2>Pseudo-classes (:hover, :focus, :target)</h2>
+  <ul>
+      <li class=hasHover>Has Hover</li>
+      <li class=hasTarget>Has Target</li>
+      <li class=hasFocus>Has Focus</li>
+  </ul>
+  <a href="#pseudoClasses">target to #pseudoClasses</a><br>
+  <a href="#">click to set target #</a><br>
+  <style>
 #pseudoClasses:hover .hasHover,
 #pseudoClasses:target .hasTarget,
 #pseudoClasses:focus .hasFocus {
   background:var(--theme-color);
 }
-</style>
-  </div>
+  </style>
+</div>
 
 
 
-  <div id=chaining>
-      <h2>Chaining</h2>
-<style>
+<div id=chaining>
+  <h2>Chaining</h2>
+  <style>
 #chaining {
   --a:var(--theme-color);
   --b:var(--a);
@@ -68,50 +68,66 @@ pre {
 #chaining:hover {
   --a:transparent;
 }
-</style>
+  </style>
 </div>
 
 <div id=fallback>
-    <h2>Fallback</h2>
-<style>
+  <h2>Fallback</h2>
+  <style>
 #fallback {
   --theme-color:var(--not_defined, green);
 }
-</style>
+  </style>
 </div>
 
 <div id=before>
     <h2>Pseudo-Elements</h2>
-<style>
+  <style>
 #before > h2 {
   --before:' 👉 ';
 }
 #before > h2::before  {
   content:var(--before);
 }
-</style>
+  </style>
 </div>
 
 <div id=style_attribute>
-    <h2>ie-style attributes</h2>
-    <div style="background-color:var(--theme-color); --inner:white; padding:10px" ie-style="background-color:var(--theme-color); --inner:white">
-      <pre>ie-style="
+  <h2>ie-style attributes</h2>
+  <div style="background-color:var(--theme-color); --inner:white; padding:10px" ie-style="background-color:var(--theme-color); --inner:white">
+    <pre>
+ie-style="
 background-color:var(--theme-color);
---inner:white"</pre>
-      <pre style="background:var(--inner); color:var(--theme-color)" ie-style="background:var(--inner); color:var(--theme-color)">
+--inner:white"
+    </pre>
+    <pre style="background:var(--inner); color:var(--theme-color)" ie-style="background:var(--inner); color:var(--theme-color)">
 ie-style="background:var(--inner);
-color:var(--theme-color)"</pre>
-    </div>
+color:var(--theme-color)"
+    </pre>
+  </div>
+</div>
+
+<div id=dom_change >
+  <h2>Dom changes</h2>
+  <button onclick="document.body.classList.toggle('dark-mode')">onclick="document.body.classList.toggle('dark-mode')"</button>
+  <style>
+body.dark-mode {
+  --bg-color:#666;
+}
+body {
+  background-color:var(--bg-color);
+}
+  </style>
 </div>
 
 
 <div id=jsIntegration>
-    <h2>JS-Integration</h2>
-    <button onclick="setThemeColor('red')">onclick="setThemeColor('red')"</button><br>
-    <button onclick="setThemeColor('orange')">onclick="setThemeColor('orange')"</button><br>
-    <br>
-    <button onclick="getThemeColor(this)">onclick="getThemeColor(this)"</button>
-<script>
+  <h2>JS-Integration</h2>
+  <button onclick="setThemeColor('red')">onclick="setThemeColor('red')"</button><br>
+  <button onclick="setThemeColor('orange')">onclick="setThemeColor('orange')"</button><br>
+  <br>
+  <button onclick="getThemeColor(this)">onclick="getThemeColor(this)"</button>
+  <script>
 function setThemeColor(color) {
   document.body.style.setProperty('--theme-color', color);
 }
@@ -120,16 +136,16 @@ function getThemeColor(element) {
   const color = computed.getPropertyValue('--theme-color');
   alert(color);
 }
-</script>
+  </script>
 </div>
 
 
 <div id=dynamicStyle>
-    <h2>dynamic added style-element</h2>
-    <button onclick="addStyleElememt()">
-        onclick="addStyleElememt()"
-    </button>
-<script>
+  <h2>dynamic added style-element</h2>
+  <button onclick="addStyleElememt()">
+      onclick="addStyleElememt()"
+  </button>
+  <script>
 function addStyleElememt(){
   var el = document.createElement('style');
   var color = (0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
@@ -139,13 +155,13 @@ function addStyleElememt(){
     '}';
   dynamicStyle.appendChild(el);
 }
-</script>
-  </div>
+  </script>
+</div>
 
-  <div id="dynamicContent">
-      <h2>Dynamic Content</h2>
-      <button onclick="setContent()">onclick="setContent()"</button>
-<script>
+<div id="dynamicContent">
+  <h2>Dynamic Content</h2>
+  <button onclick="setContent()">onclick="setContent()"</button>
+  <script>
 function setContent(){
   var content = dynamicContent.innerHTML;
   dynamicContent.innerHTML = '';
@@ -153,9 +169,8 @@ function setContent(){
     dynamicContent.innerHTML = content;
   },500)
 }
-</script>
-  </div>
-
+  </script>
+</div>
 
 
 <script hidden>
@@ -166,7 +181,7 @@ function setContent(){
     var contents = styleElement.innerHTML;
     contents = contents.replace(/-ie-/g, '--');
     contents = contents.replace(/-ieVar-[^;]+(;)?( )?/g, '');
-    pre.innerHTML = htmlEntities(contents);
+    pre.innerHTML = htmlEntities(contents.trim());
     styleElement.parentNode.insertBefore(pre, styleElement);
   }
   function htmlEntities(str) {
