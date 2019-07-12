@@ -3,18 +3,18 @@ A realy comprehensive polyfill for Custom Properties in IE11
 
 
 ## It can:
-- handle dynamic added `<style>`, `<link>`-elements
-- handle dynamic added html-content
-- cascade works
-- inheritance works
 - chaining `--bar:var(--foo)`
 - fallback `var(--color, blue)`
 - :focus, :target, :hover
+- handle dynamic added html-content
+- handle dynamic added `<style>`, `<link>`-elements
 - js-integration:
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')` !!
 - style-attributes `<div ie-style="--foo:bar"...`
+- cascade works
+- inheritance works
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
