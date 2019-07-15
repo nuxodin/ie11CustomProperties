@@ -102,9 +102,8 @@
 	docElSty.setProperty('--x', 'y');
 	if (docElSty.getPropertyValue('--x') === 'y') return;
 
-	// cached regexps, better performance?
+	// cached regexps, better performance
 	const regFindSetters = /(--([^;}]+:[^;!}]+)(!important)?)/g;
-	//const regFindGetters = /([{;]\s*)(.+:.*var\(([^;}]*))/g;
 	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
@@ -154,7 +153,7 @@
 		}
 		var matchesSetters = cssText.match(regRuleIESetters);
 		if (matchesSetters) {
-			var setters = {};// beta eg. [--color:#fff, --padding:10px];
+			var setters = {}; // eg. [--color:#fff, --padding:10px];
 			for (var j = 0, match; match = matchesSetters[j++];) {
 				var x = match.substr(4).split(':');
 				setters[x[0]] = x[1];
@@ -203,7 +202,7 @@
 	}
 	function addSetterElement(el, propVals) {
 		if (!el.ieCP_setters) el.ieCP_setters = {};
-		for (var prop in propVals) { // {foo:#fff, bar:baz}
+		for (var prop in propVals) { // eg. {foo:#fff, bar:baz}
 			el.ieCP_setters['--' + prop] = 1;
 		}
 	}
