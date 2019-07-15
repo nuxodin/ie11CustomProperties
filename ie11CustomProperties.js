@@ -1,4 +1,4 @@
-/*! ie11CustomProperties v1.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v1.0 | MIT License | https://git.io/fjXMN */
 // Helpers / needed Polyfills
 !function () {
     'use strict';
