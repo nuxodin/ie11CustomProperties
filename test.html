@@ -139,6 +139,35 @@ function getThemeColor(element) {
   </script>
 </div>
 
+<div id=register>
+  <h2>CSS.registerProperty()</h2>
+  <div class=-inheritParent style="padding:1em; margin:1em 0">
+      class=-inheritParent
+      <div class=-inheritChild style="padding:1em;">class=-inheritChild</div>
+  </div>
+  <div class=-initialValue style="padding:1em; margin:1em 0">class=-initialValue</div>
+
+<script>
+CSS.registerProperty({
+  name:'--red-border',
+  inherits:false,
+  initialValue:'5px solid red',
+})
+  </script>
+  <style>
+.-inheritParent {
+  --red-border:5px dashed red;
+  border:var(--red-border);
+}
+.-inheritChild {
+  border:var(--red-border);
+}
+.-initialValue {
+  border:var(--red-border);
+}
+  </style>
+</div>
+
 
 <div id=dynamicStyle>
   <h2>dynamic added style-element</h2>

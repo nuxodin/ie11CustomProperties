@@ -13,7 +13,8 @@ A comprehensive polyfill for Custom Properties in IE11
 - js-integration:
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
-    - `getComputedStyle(el).getPropertyValue('--inherited')` !!
+    - `getComputedStyle(el).getPropertyValue('--inherited')`
+    - `CSS.registerProperty({name:'--red',inherit:false, initialValue:'#e33'})`
 - style-attributes `<div ie-style="--foo:bar"...`
 - under 3k (min+gzip) and dependency-free
 
@@ -22,7 +23,7 @@ https://rawcdn.githack.com/nuxodin/ie11CustomProperties/b851ec2b6b8e336a78857b57
 
 ## Limitations
 #### styles in element-attributes
-There is no way to get the raw content of style-attributes in IE11.  
+There is no way to get the raw content of style-attributes in IE11.
 Use `<div style="--color:blue" ie-style="--color:blue">` for it
 
 #### specificity for properties containing "var()"

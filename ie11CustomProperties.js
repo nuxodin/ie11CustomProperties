@@ -295,7 +295,8 @@
 		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
 			variable = variable.trim();
 			var pValue = style.getPropertyValue(variable);
-			if (pValue === undefined && fallback !== undefined) pValue = fallback.trim(); // fallback
+			//if (pValue === undefined && fallback !== undefined) pValue = fallback.trim(); // fallback
+			if (pValue === '' && fallback !== undefined) pValue = fallback.trim(); // fallback
 			return pValue;
 		});
 	}
@@ -379,31 +380,34 @@
 							value = styleComputeValueWidthVars(this, value);
 						}
 					} else {
-						// inherited
-						//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
-						let el = this.computedFor.parentNode;
-						while (el.nodeType === 1) {
-							// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
-							if (el.ieCP_setters && el.ieCP_setters[property]) {
-								// i could make
-								// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
-								// but i fear performance, stupid?
-								var style = getComputedStyle(el);
-								var tmpVal = style[ieProperty];
-								if (tmpVal !== undefined) {
-									value = tmpVal;
-									if (regHasVar.test(value)) {
-										// calculated style from current element not from the element the value was inherited from! (style, value)
-										value = styleComputeValueWidthVars(this, value);
+						if (!register[property] || register[property].inherits) {
+							// inherited
+							//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
+							let el = this.computedFor.parentNode;
+							while (el.nodeType === 1) {
+								// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
+								if (el.ieCP_setters && el.ieCP_setters[property]) {
+									// i could make
+									// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
+									// but i fear performance, stupid?
+									var style = getComputedStyle(el);
+									var tmpVal = style[ieProperty];
+									if (tmpVal !== undefined) {
+										value = tmpVal;
+										if (regHasVar.test(value)) {
+											// calculated style from current element not from the element the value was inherited from! (style, value)
+											value = styleComputeValueWidthVars(this, value);
+										}
+										break;
 									}
-									break;
 								}
+								el = el.parentNode;
 							}
-							el = el.parentNode;
 						}
 					}
 				}
-
+				if (value === undefined && register[property]) value = register[property].initialValue;
+				if (value === undefined) value = '';
 				return value;
 			}
 			return original.apply(this, arguments);
@@ -429,6 +433,14 @@
 			return originalSetProp.apply(this, arguments);
 		}
 	});
+
+
+	if (!window.CSS) window.CSS = {};
+	let register = {}
+	CSS.registerProperty = function(options){
+		register[options.name] = options;
+	}
+
 
 	// utils
 	function fetchCss(url, callback) {
