@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Tobias Buschor https://goo.gl/gl0mbf | MIT License https://goo.gl/HgajeK */
+/*! ie11CustomProperties v1.0 | MIT License | https://git.io/fjXMN */
 // Helpers / needed Polyfills
 !function () {
     'use strict';
