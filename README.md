@@ -12,7 +12,7 @@ A realy comprehensive polyfill for Custom Properties in IE11
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')`
-    - `CSS.registerProperty({name:'--red',inherit:false, initialValue:'#e33'})`
+    - `CSS.registerProperty({name:'--red', inherit:false, initialValue:'#e33'})`
 - style-attributes `<div ie-style="--foo:bar"...`
 - cascade works
 - inheritance works
