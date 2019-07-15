@@ -1,0 +1,22 @@
+{
+  "name": "ie11-custom-properties",
+  "version": "1.0.0",
+  "description": "Custom Properties polyfill for IE11.",
+  "main": "ie11CustomProperties.js",
+  "author": "Tobias Buschor",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuxodin/ie11CustomProperties"
+  },
+  "keywords": [
+    "css",
+    "css custom properties",
+    "css variables",
+    "IE11"
+  ],
+  "bugs": {
+    "url": "https://github.com/nuxodin/ie11CustomProperties/issues"
+  },
+  "homepage": "https://github.com/nuxodin/ie11CustomProperties#readme"
+}
