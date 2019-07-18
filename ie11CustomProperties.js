@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v1.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v1.1.0 | MIT License | https://git.io/fjXMN */
 // Helpers / needed Polyfills
 !function () {
     'use strict';
@@ -116,7 +116,7 @@
 			if (css === newCss) return;
 			el.disabled = true;
 			var style = document.createElement('style');
-			el.after(style);
+			el.parentNode.insertBefore(style, el);
 			activateStyleElement(style, newCss);
 		});
 	}});
@@ -250,7 +250,7 @@
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 
-			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) {
+			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
 				} else {
