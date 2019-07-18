@@ -19,7 +19,7 @@ A realy comprehensive polyfill for Custom Properties in IE11
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/cf60b2c2ae9f0282daecfaa0151ba83e50626ce6/test.html
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/298e5d0ec4f3b01d2022022b9cf6278b5ac174db/test.html
 
 ## Limitations
 #### styles in element-attributes
