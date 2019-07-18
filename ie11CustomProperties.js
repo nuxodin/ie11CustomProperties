@@ -5,22 +5,7 @@
 
     if (!Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector;
 
-    var w = window;
-    if (!w.WeakSet) {
-        w.WeakSet = function (iterable) {
-            this.Map = new WeakMap();
-            iterable && iterable.forEach(this.add, this);
-        }
-        WeakSet.prototype = {
-            add: function (value) {
-                this.Map.set(value, 1);
-                return this;
-            },
-            delete: function (value) { return this.Map.delete(value); },
-            has: function (value) { return this.Map.has(value); }
-        }
-    }
-
+	var w = window;
     if (!w.c1) w.c1 = {};
     var listeners = [],
         root = document,
@@ -34,7 +19,7 @@
             selector: selector,
             immediate: options.immediate,
             //disconnectedCallback: disconnectedCallback,
-            elements: new WeakSet(),
+            elements: new WeakMap(),
         };
 
         if (options.parsed) {
@@ -47,7 +32,7 @@
 
         var els = root.querySelectorAll(listener.selector), i = 0, el;
         while (el = els[i++]) {
-            listener.elements.add(el);
+            listener.elements.set(el,true);
             listener.parsed && listener.parsed.call(el, el);
             listener.immediate && listener.immediate.call(el, el);
         }
@@ -70,7 +55,7 @@
         }
         while (el = els[i++]) {
             if (listener.elements.has(el)) continue;
-            listener.elements.add(el);
+            listener.elements.set(el,true);
             //listener.connectedCallback.call(el, el);
             listener.parsed && listener.parsed.call(el, el);
             listener.immediate && listener.immediate.call(el, el);
