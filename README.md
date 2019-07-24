@@ -45,7 +45,7 @@ header { --myColor:red; }
 main { --myColor:green; }  
 li { color:var(--myColor); }
 ```
-2. rewrite CSS  
+2. rewritten CSS  
 ```css
 header { -ie-myColor:red; }  
 main { -ie-myColor:green; }  
