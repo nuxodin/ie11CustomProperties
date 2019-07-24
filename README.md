@@ -66,7 +66,7 @@ li.uniq2 { color:red; }
 li.uniq3 { color:green; }
 li.uniq4 { color:green; }
 ```
-
+[![custom-properties-ie11.png](https://i.postimg.cc/bryMt02N/custom-properties-ie11.png)](https://postimg.cc/gX7N9ZDf)
 
 
 
