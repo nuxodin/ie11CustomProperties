@@ -54,7 +54,8 @@ li { -ieHasVar-color:var(-ie-myColor); }
 3. find all affected Element and get its property-values
 ```js
 querySelectorAll('li').forEach(function(){
-    var color = getComputedStyle(this).getPropertyValue('-ie-myColor'); //
+    var color = getComputedStyle(this).getPropertyValue('--myColor');
+    // getPropertyValue is extended to handle custom properties
     // draw_the_Element()
 })
 ```
