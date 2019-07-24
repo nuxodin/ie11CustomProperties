@@ -59,7 +59,7 @@ querySelectorAll('li').forEach(function(){
     // draw_the_Element()
 })
 ```
-3. draw Elements, this leads separate rules for each Element
+3. draw Elements, this leads in separate rules for each Element
 ```css
 li.uniq1 { color:red; }
 li.uniq2 { color:red; }
