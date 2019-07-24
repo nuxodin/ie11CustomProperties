@@ -61,10 +61,10 @@ querySelectorAll('li').forEach(function(){
 ```
 3. draw Elements, this leads in separate rules for each Element
 ```css
-li.uniq1 { color:red; }
-li.uniq2 { color:red; }
-li.uniq3 { color:green; }
-li.uniq4 { color:green; }
+li.iecp-u1 { color:red; }
+li.iecp-u2 { color:red; }
+li.iecp-u3 { color:green; }
+li.iecp-u4 { color:green; }
 ```
 [![custom-properties-ie11.png](https://i.postimg.cc/bryMt02N/custom-properties-ie11.png)](https://postimg.cc/gX7N9ZDf)
 
