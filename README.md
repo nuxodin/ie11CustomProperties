@@ -1,5 +1,5 @@
 # CSS Variables for IE11
-A realy comprehensive polyfill for Custom Properties in IE11
+A real polyfill for Custom Properties in IE11
 
 
 ## It can:
