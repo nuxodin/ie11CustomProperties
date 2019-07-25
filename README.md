@@ -31,14 +31,14 @@ Use `<div style="--color:blue" ie-style="--color:blue">` for it
 eg. `#header` results in `#header.iecp_u44`
 
 ## How it works
-The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.
+The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.  
 `.myEl {-ie-test:'aaa'} // only one dash allowed! "-"`  
 then you can read it in IE with javascript:  
 `getComputedStyle( querySelector('.myEl') )['-ie-test']`  
 In the raw CSS, it replaces for example `--foo` with `-ie-foo`.
 It searches for all rules containing variable getters and setter, remembers the affected selectors so future affected Elements can be found in a mutation observer.
-Each affected Element gets a uniq class-attribute and its own style-sheet to draw the Element.
-Here is an example with the different steps:  
+Each affected Element gets a uniq class-attribute and its own style-sheet to draw the Element.  
+These are the steps that the script does:  
 1. given the CSS  
 ```css
 header { --myColor:red; }  
