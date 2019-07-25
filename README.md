@@ -71,5 +71,7 @@ li.iecp-u4 { color:green; }
 
 
 ## Help wanted!
-Please test and report bugs.
-And add a ⭐️ and tweet about if you like it.
+- Add a ⭐️  
+- Test, report bugs and send pull requests.  
+- Tweet about if you like it.  
+- Vote this solution at stackoverflow https://stackoverflow.com/a/57000437/4865307  
