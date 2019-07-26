@@ -21,15 +21,6 @@ A real polyfill for Custom Properties in IE11
 ## Demo:
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/298e5d0ec4f3b01d2022022b9cf6278b5ac174db/test.html
 
-## Limitations
-#### styles in element-attributes
-There is no way to get the raw content of style-attributes in IE11.
-Use `<div style="--color:blue" ie-style="--color:blue">` for it
-
-#### specificity for properties containing "var()"
-...is always little highter, cause each selector gets an additional class-selector
-eg. `#header` results in `#header.iecp_u44`
-
 ## How it works
 The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.  
 `.myEl {-ie-test:'aaa'} // only one dash allowed! "-"`  
@@ -68,6 +59,15 @@ li.iecp-u4 { color:green; }
 ```
 [![custom-properties-ie11.png](https://i.postimg.cc/bryMt02N/custom-properties-ie11.png)](https://postimg.cc/gX7N9ZDf)
 
+
+## Limitations
+#### styles in element-attributes
+There is no way to get the raw content of style-attributes in IE11.
+Use `<div style="--color:blue" ie-style="--color:blue">` for it
+
+#### specificity for properties containing "var()"
+...is always little highter, cause each selector gets an additional class-selector
+eg. `#header` results in `#header.iecp_u44`
 
 
 ## Help wanted!
