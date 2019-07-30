@@ -159,8 +159,7 @@
 
 	function addGettersSelector(selector, properties) {
 		selectorAddPseudoListeners(selector);
-		var selectorWithoutPseudo = selector.replace(regPseudos,'');
-		c1.onElement(selectorWithoutPseudo, function (el) {
+		c1.onElement(unPseudo(selector), function (el) {
 			addGetterElement(el, properties, selector);
 			drawElement(el);
 		});
@@ -179,8 +178,7 @@
 	}
 	function addSettersSelector(selector, propVals) {
 		selectorAddPseudoListeners(selector);
-		const selectorWithoutPseudo = selector.replace(regPseudos,'');
-		c1.onElement(selectorWithoutPseudo, function (el) {
+		c1.onElement(unPseudo(selector), function (el) {
 			addSetterElement(el, propVals);
 			drawTree(el);
 		});
@@ -200,21 +198,49 @@
 		focus:{
 			on:'focusin',
 			off:'focusout'
-		}
+		},
+		active:{
+			on:'CSSActivate',
+			off:'CSSDeactivate'
+		},
 	};
 	function selectorAddPseudoListeners(selector){
 		for (var pseudo in pseudos) {
 			var parts = selector.split(':'+pseudo);
 			if (parts.length > 1) {
+				var ending = parts[1].match(/^[^\s]*/); // ending elementpart of selector (used for not(:active))
+				let selector = unPseudo(parts[0]+ending);
 				const listeners = pseudos[pseudo];
-				c1.onElement(parts[0], function (el) {
+				c1.onElement(selector, function (el) {
 					el.addEventListener(listeners.on, drawTreeEvent);
 					el.addEventListener(listeners.off, drawTreeEvent);
 				});
 			}
 		}
 	}
+	let CSSActive = null;
+	document.addEventListener('mousedown',function(e){
+		setTimeout(function(){
+			if (e.target === document.activeElement) {
+				var evt = document.createEvent('Event');
+				evt.initEvent('CSSActivate', true, true);
+				CSSActive = e.target;
+				CSSActive.dispatchEvent(evt);
+			}
+		})
+	});
+	document.addEventListener('mouseup',function(){
+		if (CSSActive) {
+			var evt = document.createEvent('Event');
+			evt.initEvent('CSSDeactivate', true, true);
+			CSSActive.dispatchEvent(evt);
+			CSSActive = null;
+		}
+	});
 
+	function unPseudo(selector){
+		return selector.replace(regPseudos,'').replace(':not()','');
+	}
 
 	var uniqueCounter = 0;
 
@@ -311,23 +337,7 @@
 			drawTree(document);
 		}
 		oldHash = location.hash;
-	})
-	/*
-	// :active listener, on(de)activate, but wrong Elements can get activeElement
-	var oldActive = false;
-	document.addEventListener('activate',function(e){
-		const el = e.target;
-		if (
-			'form' in el
-			|| el.isContentEditable
-			|| el.hasAttribute('tabindex')
-			|| el.tagName === 'A'
-		) {
-			console.log(el)
-			oldActive = el;
-		}
-	})
-	*/
+	});
 
 	// add owningElement to Element.style
 	var descriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'style');
