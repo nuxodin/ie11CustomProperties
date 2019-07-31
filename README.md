@@ -19,7 +19,7 @@ A real polyfill for Custom Properties in IE11
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/298e5d0ec4f3b01d2022022b9cf6278b5ac174db/test.html
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/14f6b0acba054d2c693da44bd7857761d289987e/test.html
 
 ## How it works
 The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.  
