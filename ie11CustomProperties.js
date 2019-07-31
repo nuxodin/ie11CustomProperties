@@ -1,5 +1,5 @@
-/*! ie11CustomProperties.js v1.2.0 | MIT License | https://git.io/fjXMN */
-// Helpers / needed Polyfills
+/*! ie11CustomProperties.js v1.3.0 | MIT License | https://git.io/fjXMN */
+// c1.onElement helper
 !function () {
     'use strict';
 
@@ -88,7 +88,7 @@
 	if (docElSty.getPropertyValue('--x') === 'y') return;
 
 	// cached regexps, better performance
-	const regFindSetters = /(--([^;}]+:[^;!}]+)(!important)?)/g;
+	const regFindSetters = /([\s{;])(--([^;}]+:[^;!}]+)(!important)?)/g;
 	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
@@ -125,10 +125,10 @@
 	// should we add something like -ieVar-pseudo_after-content:'x'?
 	function rewriteCss(css) {
 		//css = css.replace(regFindSetters, function(x, y, propVal, important){ return '-ie-'+propVal+(important?'ie-important':'')}); // todo: !imporant
-		css = css.replace(regFindSetters, '-ie-$2');
+		css = css.replace(regFindSetters, '$1-ie-$3');
 		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
-	function parseRewrittenCss(cssText){
+	function parseRewrittenCss(cssText) {
 		var matchesGetters = cssText.match(regRuleIEGetters);
 		if (matchesGetters) {
 			var getters = []; // eg. [border,color]
@@ -205,6 +205,10 @@
 		},
 	};
 	function selectorAddPseudoListeners(selector){
+		// ie11 has the strange behavoir, that groups of selectors are individual rules, but starting with the full selector:
+		// td, th, button { color:red } results in this rules:
+		// "td, th, button" | "th, th" | "th"
+		selector = selector.split(',')[0];
 		for (var pseudo in pseudos) {
 			var parts = selector.split(':'+pseudo);
 			if (parts.length > 1) {
