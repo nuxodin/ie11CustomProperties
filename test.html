@@ -139,6 +139,38 @@ function getThemeColor(element) {
   </script>
 </div>
 
+<div id=important class=important>
+  <h2>!important</h2>
+  <style hidden>
+body {
+  --important:var(--theme-color) !important;
+  --important:white;
+}
+.important:hover {
+  background-color:var(--important) !important;
+}
+#important {
+  background-color:white;
+}
+  </style>
+  <pre>
+/* important on setters: */
+body {
+  --important:var(--theme-color) !important;
+  --important:white;
+}
+
+/* important on gettses: */
+.important:hover {
+  background-color:var(--important) !important;
+}
+#important {
+  background-color:white;
+}
+  </pre>
+
+</div>
+
 <div id=register>
   <h2>CSS.registerProperty()</h2>
   <div class=-inheritParent style="padding:1em; margin:1em 0">
@@ -204,7 +236,7 @@ function setContent(){
 
 <script hidden>
   !document.body.msMatchesSelector && alert("Visit this Page in IE11!");
-  var styleElements = document.querySelectorAll('style, script:not([hidden])');
+  var styleElements = document.querySelectorAll('style:not([hidden]), script:not([hidden])');
   for (var i=0, styleElement; styleElement = styleElements[i++];) {
     const pre = document.createElement('pre');
     var contents = styleElement.innerHTML;

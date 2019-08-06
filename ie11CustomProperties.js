@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v1.3.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.0.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
@@ -89,7 +89,8 @@
 
 	// cached regexps, better performance
 	const regFindSetters = /([\s{;])(--([^;}]+:[^;!}]+)(!important)?)/g;
-	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
+	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^!;}]+)(!important)?/g;
+	//const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
@@ -124,24 +125,30 @@
 	// #el::after { -content:'x'; } => getComputedStyle(el)['-content'] == 'x'
 	// should we add something like -ieVar-pseudo_after-content:'x'?
 	function rewriteCss(css) {
-		//css = css.replace(regFindSetters, function(x, y, propVal, important){ return '-ie-'+propVal+(important?'ie-important':'')}); // todo: !imporant
-		css = css.replace(regFindSetters, '$1-ie-$3');
-		return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
+		css = css.replace(regFindSetters, function($0, $1, $2, $3, important){ return $1+'-ie-'+(important?'❗':'')+$3}); // !imporant
+		//css = css.replace(regFindSetters, '$1-ie-$3$4');
+		return css.replace(regFindGetters, function($0, $1, $2, important){ return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; }) // keep the original, so chaining works "--x:var(--y)"
+		//return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
 	function parseRewrittenCss(cssText) {
 		var matchesGetters = cssText.match(regRuleIEGetters);
 		if (matchesGetters) {
 			var getters = []; // eg. [border,color]
 			for (var j = 0, match; match = matchesGetters[j++];) {
-				getters.push(match.slice(7, -1));
+				let propName = match.slice(7, -1);
+				if (propName[0] === '❗') propName = propName.substr(1);
+				getters.push(propName);
 			}
 		}
 		var matchesSetters = cssText.match(regRuleIESetters);
 		if (matchesSetters) {
 			var setters = {}; // eg. [--color:#fff, --padding:10px];
 			for (var j = 0, match; match = matchesSetters[j++];) {
-				var x = match.substr(4).split(':');
-				setters[x[0]] = x[1];
+				let x = match.substr(4).split(':');
+				let propName = x[0];
+				let propValue = x[1];
+				if (propName[0] === '❗') propName = propName.substr(1);
+				setters[propName] = propValue;
 			}
 		}
 		return {getters:getters, setters:setters};
@@ -261,9 +268,11 @@
 		var style = getComputedStyle(el);
 		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPSelectors) {
-			var valueWithVar = style['-ieVar-' + prop];
+			var important = style['-ieVar-❗' + prop];
+			let valueWithVar = important || style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
+			if (important) value += ' !important';
 
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
@@ -370,8 +379,9 @@
 	Object.defineProperty(CSSStyleDeclarationProto, 'getPropertyValue', {
 		value: function (property) {
 			if (property.match(regStartingVar)) {
-				var ieProperty = property.replace(regStartingVar, '-ie-');
-				var value = this[ieProperty];
+				const ieProperty = property.replace(regStartingVar, '-ie-');
+				const iePropertyImportant = property.replace(regStartingVar, '-ie-❗');
+				let value = this[iePropertyImportant] || this[ieProperty];
 				if (this.computedFor) { // computedStyle
 					if (value !== undefined) {
 						if (regHasVar.test(value)) {
@@ -389,7 +399,7 @@
 									// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
 									// but i fear performance, stupid?
 									var style = getComputedStyle(el);
-									var tmpVal = style[ieProperty];
+									var tmpVal = style[iePropertyImportant] || style[ieProperty];
 									if (tmpVal !== undefined) {
 										value = tmpVal;
 										if (regHasVar.test(value)) {
@@ -424,7 +434,7 @@
 					drawTree(el);
 				}
 
-				property = property.replace(regStartingVar, '-ie-');
+				property = property.replace(regStartingVar, '-ie-'+(prio==='important'?'❗':''));
 				this.cssText += '; ' + property + ':' + value + ';';
 				//this[property] = value;
 			}
