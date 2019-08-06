@@ -16,10 +16,11 @@ A real polyfill for Custom Properties in IE11
 - style-attributes `<div ie-style="--foo:bar"...`
 - cascade works
 - inheritance works
+- `!important` on setters and getters
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/14f6b0acba054d2c693da44bd7857761d289987e/test.html
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/83e8650eeed68bea157d13ca8b0d86bd39dec0fb/test.html
 
 ## How it works
 The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.  
