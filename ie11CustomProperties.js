@@ -125,6 +125,22 @@
 	// #el::after { -content:'x'; } => getComputedStyle(el)['-content'] == 'x'
 	// should we add something like -ieVar-pseudo_after-content:'x'?
 	function rewriteCss(css) {
+
+		/* uncomment if spec finished and needed by someone
+		css = css.replace(/@property ([^{]+){([^}]+)}/, function($0, prop, body){
+			prop = prop.trim();
+			const declaration = {name:prop};
+			body.split(';').forEach(function(pair){
+				const x = pair.split(':');
+				if (x[1]) declaration[ x[0].trim() ] = x[1];
+			});
+			declaration['inherits'] = declaration['inherits'].trim()==='true' ? true : false;
+			declaration['initialValue'] = declaration['initial-value'];
+			CSS.registerProperty(declaration)
+			return '/*\n @property ... removed \n*'+'/';
+		});
+		*/
+
 		css = css.replace(regFindSetters, function($0, $1, $2, $3, important){ return $1+'-ie-'+(important?'❗':'')+$3}); // !imporant
 		//css = css.replace(regFindSetters, '$1-ie-$3$4');
 		return css.replace(regFindGetters, function($0, $1, $2, important){ return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; }) // keep the original, so chaining works "--x:var(--y)"
