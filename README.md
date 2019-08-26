@@ -22,6 +22,12 @@ A real polyfill for Custom Properties in IE11
 ## Demo:
 https://rawcdn.githack.com/nuxodin/ie11CustomProperties/83e8650eeed68bea157d13ca8b0d86bd39dec0fb/test.html
 
+## Help wanted!
+- Add a ⭐️  
+- Vote for this solution at stackoverflow https://stackoverflow.com/a/57000437/4865307  
+- Test, report bugs and send pull requests.  
+- Tweet about if you like it.  
+
 ## How it works
 The script makes use of the fact that IE has minimal custom properties support where properties can be defined and read out with the cascade in mind. This is not possible with properties starting with double dashes.  
 `.myEl {-ie-test:'aaa'} // only one dash allowed! "-"`  
@@ -70,9 +76,3 @@ Use `<div style="--color:blue" ie-style="--color:blue">` for it
 ...is always little highter, cause each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
 
-
-## Help wanted!
-- Add a ⭐️  
-- Test, report bugs and send pull requests.  
-- Tweet about if you like it.  
-- Vote this solution at stackoverflow https://stackoverflow.com/a/57000437/4865307  
