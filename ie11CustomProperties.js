@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.0.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.1.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
@@ -78,14 +78,33 @@
         loaded = true;
     });
 
+	// svg-classList polyfill
+	function copyProperty(prop, from, to){
+		var desc = Object.getOwnPropertyDescriptor(from, prop);
+		Object.defineProperty(to, prop, desc);
+	}
+	if (!('classList' in Element.prototype)) {
+		copyProperty('classList', HTMLElement.prototype, Element.prototype);
+	}
+	// if ('children' in HTMLElement.prototype && !('children' in Element.prototype)) {
+	// 	copyProperty('children', HTMLElement.prototype, Element.prototype);
+	// }
+	// if ('contains' in HTMLElement.prototype && !('contains' in Element.prototype)) {
+	// 	copyProperty('contains', HTMLElement.prototype, Element.prototype);
+	// }
+	// if ('getElementsByClassName' in HTMLElement.prototype && !('getElementsByClassName' in Element.prototype)) {
+	// 	copyProperty('getElementsByClassName', HTMLElement.prototype, Element.prototype);
+	// }
+
+
 }();
 
 // main logic
 !function () {
 	'use strict';
-	var docElSty = document.documentElement.style;
-	docElSty.setProperty('--x', 'y');
-	if (docElSty.getPropertyValue('--x') === 'y') return;
+	var testEl = document.createElement('i');
+	testEl.style.setProperty('--x', 'y');
+	if (testEl.style.getPropertyValue('--x') === 'y' || !testEl.msMatchesSelector) return;
 
 	// cached regexps, better performance
 	const regFindSetters = /([\s{;])(--([^;}]+:[^;!}]+)(!important)?)/g;
@@ -289,7 +308,6 @@
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 			if (important) value += ' !important';
-
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
