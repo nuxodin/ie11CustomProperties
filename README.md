@@ -17,10 +17,11 @@ A real polyfill for Custom Properties in IE11
 - cascade works
 - inheritance works
 - `!important` on setters and getters
+- SVG-support
 - under 3k (min+gzip) and dependency-free
 
 ## Demo:
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/83e8650eeed68bea157d13ca8b0d86bd39dec0fb/test.html
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/b3ae3834959da3829042ed5747585f4c1270dff4/test.html
 
 ## Help wanted!
 - Add a ⭐️  
