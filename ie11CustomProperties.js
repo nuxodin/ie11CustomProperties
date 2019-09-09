@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.1.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.2.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
@@ -108,8 +108,7 @@
 
 	// cached regexps, better performance
 	const regFindSetters = /([\s{;])(--([^;}]+:[^;!}]+)(!important)?)/g;
-	const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^!;}]+)(!important)?/g;
-	//const regFindGetters = /([{;]\s*)([^;}]+:[^;}]*var\([^;}]+)/g;
+	const regFindGetters = /([{;]\s*)([^;}{]+:[^;}]*var\([^!;}]+)(!important)?/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
@@ -196,6 +195,16 @@
 			const found = parseRewrittenCss(rule.cssText)
 			if (found.getters) addGettersSelector(rule.selectorText, found.getters);
 			if (found.setters) addSettersSelector(rule.selectorText, found.setters);
+
+			// mediaQueries: redraw the hole document
+			// better add events for each element?
+			const media = rule.parentRule && rule.parentRule.media && rule.parentRule.media.mediaText;
+			if (media && (found.getters || found.setters)) {
+				matchMedia(media).addListener(function(){
+					drawTree(document.documentElement)
+				})
+			}
+
 		}
 	}
 

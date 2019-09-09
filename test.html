@@ -37,6 +37,8 @@ pre {
 }
 </style>
 
+
+
 <div id=pseudoClasses tabindex=0>
   <h2>Pseudo-classes (:hover, :focus, :target)</h2>
   <ul>
@@ -81,15 +83,15 @@ pre {
 </div>
 
 <div id=before>
-    <h2>Pseudo-Elements</h2>
-  <style>
+  <h2>Pseudo-Elements</h2>
+<style>
 #before > h2 {
-  --before:' 👉 ';
+--before:' 👉 ';
 }
 #before > h2::before  {
-  content:var(--before);
+content:var(--before);
 }
-  </style>
+</style>
 </div>
 
 <div id=style_attribute>
@@ -156,6 +158,31 @@ function getThemeColor(element) {
   </script>
 </div>
 
+
+
+<div id=mediaQueries tabindex=0>
+    <h2>Media Queries</h2>
+    <p>Resize the browser window</p>
+    <ul>
+        <li class=min400 >min-width: 400px</li>
+        <li class=min800 >min-width: 800px</li>
+        <li class=min1200>min-width: 1200px</li>
+        <li class=min1600>min-width: 1600px</li>
+        <li class=min2000>min-width: 2000px</li>
+        <li class=min2400>min-width: 2400px</li>
+    </ul>
+    <style>
+@media (min-width: 400px ) { .min400  { background:var(--theme-color); } }
+@media (min-width: 800px ) { .min800  { background:var(--theme-color); } }
+@media (min-width: 1200px) { .min1200 { background:var(--theme-color); } }
+@media (min-width: 1600px) { .min1600 { background:var(--theme-color); } }
+@media (min-width: 2000px) { .min2000 { background:var(--theme-color); } }
+@media (min-width: 2400px) { .min2400 { background:var(--theme-color); } }
+    </style>
+</div>
+
+
+
 <div id=important class=important>
   <h2>!important</h2>
   <style hidden>
@@ -190,11 +217,14 @@ body {
 
 <div id=register>
   <h2>CSS.registerProperty()</h2>
-  <div class=-inheritParent style="padding:1em; margin:1em 0">
-      class=-inheritParent
-      <div class=-inheritChild style="padding:1em;">class=-inheritChild</div>
+  <div class=initialValue style="padding:1em; margin:1em 0">class=initialValue</div>
+  <div class=parent style="padding:1em; margin:1em 0">
+      class=parent<br>
+      <div class=child style="padding:1em;">
+        class=child<br>
+        should not inherit dotted border
+      </div>
   </div>
-  <div class=-initialValue style="padding:1em; margin:1em 0">class=-initialValue</div>
 
 <script>
 CSS.registerProperty({
@@ -204,14 +234,14 @@ CSS.registerProperty({
 })
   </script>
   <style>
-.-inheritParent {
+.initialValue {
+  border:var(--red-border);
+}
+.parent {
   --red-border:5px dashed red;
   border:var(--red-border);
 }
-.-inheritChild {
-  border:var(--red-border);
-}
-.-initialValue {
+.child {
   border:var(--red-border);
 }
   </style>
