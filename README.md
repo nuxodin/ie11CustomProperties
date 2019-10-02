@@ -69,7 +69,7 @@ li.iecp-u4 { color:green; }
 [![custom-properties-ie11.png](https://i.postimg.cc/bryMt02N/custom-properties-ie11.png)](https://postimg.cc/gX7N9ZDf)
 
 
-## Limitations
+## Small limitations
 #### styles in element-attributes
 There is no way to get the raw content of style-attributes in IE11.  
 Use `<div style="--color:blue" ie-style="--color:blue">` for it
