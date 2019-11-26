@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.4.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.5.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
@@ -155,7 +155,7 @@
 	}});
 
 	function relToAbs(base, css) {
-		return css.replace(/url\(([^)]+)\)/, function($0, $1){
+		return css.replace(/url\(([^)]+)\)/g, function($0, $1){
 			$1 = $1.trim().replace(/(^['"]|['"]$)/g,'');
 			if ($1.match(/^([a-z]+:|\/)/)) return $0;
 			base = base.replace(/\?.*/,'');
