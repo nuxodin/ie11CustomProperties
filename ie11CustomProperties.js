@@ -118,6 +118,7 @@
 		fetchCss(el.href, function (css) {
 			var newCss = rewriteCss(css);
 			if (css === newCss) return;
+			newCss = relToAbs(el.href, newCss);
 			el.disabled = true;
 			var style = document.createElement('style');
 			el.parentNode.insertBefore(style, el);
@@ -138,6 +139,15 @@
 		if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
 		if (found.setters) addSetterElement(el, found.setters);
 	}});
+
+	function relToAbs(base, css) {
+		return css.replace(/url\(([^)]+)\)/, function($0, $1){
+			$1 = $1.trim().replace(/(^['"]|['"]$)/g,'');
+			if ($1.match(/^([a-z]+:|\/)/)) return $0;
+			base = base.replace(/\?.*/,'');
+			return 'url('+ base + './../' + $1 +')';
+		});
+	}
 
 	// ie has a bug, where unknown properties at pseudo-selectors are computed at the element
 	// #el::after { -content:'x'; } => getComputedStyle(el)['-content'] == 'x'
