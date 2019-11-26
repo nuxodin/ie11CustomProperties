@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.3.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.4.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
@@ -78,13 +78,27 @@
         loaded = true;
     });
 
-	// svg-classList polyfill
+	// svg polyfills
 	function copyProperty(prop, from, to){
 		var desc = Object.getOwnPropertyDescriptor(from, prop);
 		Object.defineProperty(to, prop, desc);
 	}
 	if (!('classList' in Element.prototype)) {
 		copyProperty('classList', HTMLElement.prototype, Element.prototype);
+	}
+	if (!('innerHTML' in Element.prototype)) {
+		copyProperty('innerHTML', HTMLElement.prototype, Element.prototype);
+	}
+	if (!('sheet' in SVGStyleElement.prototype)) {
+		Object.defineProperty(SVGStyleElement.prototype, 'sheet', {
+			get:function(){
+				var all = document.styleSheets;
+				for (var i=0, sheet; sheet=all[i++];) {
+					if (sheet.ownerNode === this) return sheet;
+				}
+
+			}
+		});
 	}
 	// if ('children' in HTMLElement.prototype && !('children' in Element.prototype)) {
 	// 	copyProperty('children', HTMLElement.prototype, Element.prototype);
