@@ -240,18 +240,14 @@
 		});
 	}
 	function addGetterElement(el, properties, selector) {
-		var selectorIndex;
+		var i, prop, j;
+		const selectors = selector.split(','); // split grouped selectors
 		el.setAttribute('iecp-needed', true);
 		if (!el.ieCPSelectors) el.ieCPSelectors = {};
-		for (var i = 0, prop; prop = properties[i++];) {
-			// split ".component, .component-variation" into separate selectors to allow proper overriding
-			const selectorParts = selector.split(',');
-			for (selectorIndex = 0; selectorIndex < selectorParts.length; selectorIndex++) {
-				const parts = selectorParts[selectorIndex].trim().split('::');
-				if (!el.ieCPSelectors[prop]) {
-					el.ieCPSelectors[prop] = [];
-				}
-
+		for (i = 0; prop = properties[i++];) {
+			for (j = 0; selector = selectors[j++];) {
+				const parts = selector.trim().split('::');
+				if (!el.ieCPSelectors[prop]) el.ieCPSelectors[prop] = [];
 				el.ieCPSelectors[prop].push({
 					selector: parts[0],
 					pseudo: parts[1] ? '::' + parts[1] : ''
