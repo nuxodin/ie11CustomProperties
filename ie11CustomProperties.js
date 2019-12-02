@@ -189,10 +189,10 @@
 		//return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
 	function parseRewrittenCss(cssText) {
-		var matchesGetters = cssText.match(regRuleIEGetters);
+		var matchesGetters = cssText.match(regRuleIEGetters), j, match;
 		if (matchesGetters) {
 			var getters = []; // eg. [border,color]
-			for (var j = 0, match; match = matchesGetters[j++];) {
+			for (j = 0; match = matchesGetters[j++];) {
 				let propName = match.slice(7, -1);
 				if (propName[0] === '❗') propName = propName.substr(1);
 				getters.push(propName);
@@ -201,7 +201,7 @@
 		var matchesSetters = cssText.match(regRuleIESetters);
 		if (matchesSetters) {
 			var setters = {}; // eg. [--color:#fff, --padding:10px];
-			for (var j = 0, match; match = matchesSetters[j++];) {
+			for (j = 0; match = matchesSetters[j++];) {
 				let x = match.substr(4).split(':');
 				let propName = x[0];
 				let propValue = x[1];
@@ -214,8 +214,8 @@
 	function activateStyleElement(style, css) {
 		style.innerHTML = css;
 		style.setAttribute('ie-polyfilled', true);
-		var rules = style.sheet.rules || style.sheet.cssRules;
-		for (var i = 0, rule; rule = rules[i++];) {
+		var rules = style.sheet.rules || style.sheet.cssRules, i=0, rule;
+		while (rule = rules[i++]) {
 			const found = parseRewrittenCss(rule.cssText)
 			if (found.getters) addGettersSelector(rule.selectorText, found.getters);
 			if (found.setters) addSettersSelector(rule.selectorText, found.setters);
@@ -240,11 +240,11 @@
 		});
 	}
 	function addGetterElement(el, properties, selector) {
-		var i, prop, j;
+		var i=0, prop, j;
 		const selectors = selector.split(','); // split grouped selectors
 		el.setAttribute('iecp-needed', true);
 		if (!el.ieCPSelectors) el.ieCPSelectors = {};
-		for (i = 0; prop = properties[i++];) {
+		while (prop = properties[i++]) {
 			for (j = 0; selector = selectors[j++];) {
 				const parts = selector.trim().split('::');
 				if (!el.ieCPSelectors[prop]) el.ieCPSelectors[prop] = [];
