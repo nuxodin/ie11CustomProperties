@@ -23,7 +23,7 @@ Used on about 7000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - under 3k (min+gzip) and dependency-free
 
 ## Demo
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/d8abc414fa8ac49135e0029452e253d418d2f866/test.html
+https://rawcdn.githack.com/nuxodin/ie11CustomProperties/132e9517197ba1d9ca71102dcc7e3d76fffb5835/test.html
 
 ## Ussage
 You only want IE11 to load the polyfill, use this snipped in the head of your html file, it then just works:
