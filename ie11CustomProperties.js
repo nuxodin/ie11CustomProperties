@@ -141,6 +141,7 @@
 	}});
 	c1.onElement('style', {immediate:function (el) {
 		if (el.hasAttribute('ie-polyfilled')) return;
+		if (el.ieCP_elementSheet) return;
 		var css = el.innerHTML;
 		var newCss = rewriteCss(css);
 		if (css === newCss) return;
@@ -149,7 +150,7 @@
 	c1.onElement('[ie-style]', {immediate:function (el) {
 		var newCss = rewriteCss('{'+el.getAttribute('ie-style')).substr(1);
 		el.style.cssText += ';'+ newCss;
-		var found = parseRewrittenCss(newCss);
+		var found = parseRewrittenStyle(el.style);
 		if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
 		if (found.setters) addSetterElement(el, found.setters);
 	}});
@@ -188,7 +189,14 @@
 		return css.replace(regFindGetters, function($0, $1, $2, important){ return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; }) // keep the original, so chaining works "--x:var(--y)"
 		//return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
-	function parseRewrittenCss(cssText) {
+
+	// beta
+	//const styles_of_getter_properties = {};
+
+	function parseRewrittenStyle(style) { // less memory then parameter cssText?
+		// beta
+		//style['z-index']; // can access unknown properties in stylesheets only if accessed a dashed known property
+		const cssText = style.cssText;
 		var matchesGetters = cssText.match(regRuleIEGetters), j, match;
 		if (matchesGetters) {
 			var getters = []; // eg. [border,color]
@@ -196,6 +204,9 @@
 				let propName = match.slice(7, -1);
 				if (propName[0] === '❗') propName = propName.substr(1);
 				getters.push(propName);
+				// beta
+				//if (!styles_of_getter_properties[propName]) styles_of_getter_properties[propName] = [];
+				//styles_of_getter_properties[propName].push(style);
 			}
 		}
 		var matchesSetters = cssText.match(regRuleIESetters);
@@ -214,9 +225,9 @@
 	function activateStyleElement(style, css) {
 		style.innerHTML = css;
 		style.setAttribute('ie-polyfilled', true);
-		var rules = style.sheet.rules || style.sheet.cssRules, i=0, rule;
+		var rules = style.sheet.rules, i=0, rule; // cssRules = CSSRuleList, rules = MSCSSRuleList
 		while (rule = rules[i++]) {
-			const found = parseRewrittenCss(rule.cssText)
+			const found = parseRewrittenStyle(rule.style);
 			if (found.getters) addGettersSelector(rule.selectorText, found.getters);
 			if (found.setters) addSettersSelector(rule.selectorText, found.setters);
 
@@ -259,7 +270,6 @@
 		selectorAddPseudoListeners(selector);
 		c1.onElement(unPseudo(selector), function (el) {
 			addSetterElement(el, propVals);
-			drawTree(el);
 		});
 	}
 	function addSetterElement(el, propVals) {
@@ -267,7 +277,25 @@
 		for (var prop in propVals) { // eg. {foo:#fff, bar:baz}
 			el.ieCP_setters['--' + prop] = 1;
 		}
+		drawTree(el);
 	}
+
+	// beta
+	// function redrawStyleSheets() {
+	// 	for (var prop in styles_of_getter_properties) {
+	// 		let styles = styles_of_getter_properties[prop];
+	// 		for (var i=0, style; style=styles[i++];) {
+	// 			if (style.owningElement) continue;
+	// 			var value = style['-ieVar-'+prop];
+	// 			if (!value) continue;
+	// 			var value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
+	// 			style[prop] = value;
+	// 		}
+	// 	}
+	// }
+	// setTimeout(redrawStyleSheets,1000);
+	//setTimeout(redrawStyleSheets,2000);
+
 
 	const pseudos = {
 		hover:{
@@ -328,31 +356,51 @@
 	var uniqueCounter = 0;
 
 	function _drawElement(el) {
+		// beta
+		// if (el === document.documentElement) redrawStyleSheets();
+
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
 			el.classList.add('iecp-u' + el.ieCP_unique);
 		}
-		if (!el.ieCP_sheet) {
-			var tag = document.createElement('style');
-			document.head.appendChild(tag);
-			el.ieCP_sheet = tag.sheet;
-		}
+		// if (!el.ieCP_sheet) { zzz
+		// 	var tag = document.createElement('style');
+		// 	document.head.appendChild(tag);
+		// 	el.ieCP_sheet = tag.sheet;
+		// }
 		var style = getComputedStyle(el);
-		while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
+		if (el.ieCP_sheet) while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPSelectors) {
 			var important = style['-ieVar-❗' + prop];
 			let valueWithVar = important || style['-ieVar-' + prop];
 			if (!valueWithVar) continue;
 			var value = styleComputeValueWidthVars(style, valueWithVar);
+
+			// beta
+			//var servedBy = {};
+			//var value = styleComputeValueWidthVars(style, valueWithVar, servedBy);
+			//if (servedBy.allByRoot !== false) continue;
+
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
 				} else {
-					el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+					//el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+					elementStyleSheet(el).insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
 				}
 			}
 		}
+	}
+	function elementStyleSheet(el){
+		if (!el.ieCP_sheet) {
+			var tag = document.createElement('style');
+			tag.ieCP_elementSheet = 1;
+			el.appendChild(tag); // yes! self-closing tags can have style as children
+			//document.head.appendChild(tag);
+			el.ieCP_sheet = tag.sheet;
+		}
+		return el.ieCP_sheet;
 	}
 	function drawTree(target) {
 		if (!target) return;
@@ -385,11 +433,11 @@
 	}
 
 	const regValueGetters = /var\(([^),]+)(\,(.+))?\)/g;
-	function styleComputeValueWidthVars(style, valueWithVar){
+	function styleComputeValueWidthVars(style, valueWithVar, servedByReference){
 		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
 			variable = variable.trim();
 			var pValue = style.getPropertyValue(variable);
-			//if (pValue === undefined && fallback !== undefined) pValue = fallback.trim(); // fallback
+			if (servedByReference && style.lastPropertyServedBy !== document.documentElement) servedByReference.allByRoot = false;
 			if (pValue === '' && fallback !== undefined) pValue = fallback.trim(); // fallback
 			return pValue;
 		});
@@ -445,19 +493,21 @@
 	// getPropertyValue / setProperty hooks
 	var CSSStyleDeclarationProto = CSSStyleDeclaration.prototype;
 
-	const regStartingVar = /^--/;
 	var original = CSSStyleDeclarationProto.getPropertyValue;
 	Object.defineProperty(CSSStyleDeclarationProto, 'getPropertyValue', {
 		value: function (property) {
-			if (property.match(regStartingVar)) {
-				const ieProperty = property.replace(regStartingVar, '-ie-');
-				const iePropertyImportant = property.replace(regStartingVar, '-ie-❗');
+				this.lastPropertyServedBy = false;
+				if (property[0] !== '-' || property[1] !== '-') return original.apply(this, arguments);
+				const undashed = property.substr(2);
+				const ieProperty = '-ie-'+undashed;
+				const iePropertyImportant = '-ie-❗'+undashed;
 				let value = this[iePropertyImportant] || this[ieProperty];
 				if (this.computedFor) { // computedStyle
 					if (value !== undefined) {
 						if (regHasVar.test(value)) {
 							value = styleComputeValueWidthVars(this, value);
 						}
+						this.lastPropertyServedBy = this.computedFor;
 					} else {
 						if (!register[property] || register[property].inherits) {
 							// inherited
@@ -477,6 +527,7 @@
 											// calculated style from current element not from the element the value was inherited from! (style, value)
 											value = styleComputeValueWidthVars(this, value);
 										}
+										this.lastPropertyServedBy = el;
 										break;
 									}
 								}
@@ -488,28 +539,22 @@
 				if (value === undefined && register[property]) value = register[property].initialValue;
 				if (value === undefined) value = '';
 				return value;
-			}
-			return original.apply(this, arguments);
 		}
 	});
 
 	var originalSetProp = CSSStyleDeclarationProto.setProperty;
 	Object.defineProperty(CSSStyleDeclarationProto, 'setProperty', {
 		value: function (property, value, prio) {
-			if (property.match(regStartingVar)) {
-
+				if (property[0] !== '-' || property[1] !== '-') return originalSetProp.apply(this, arguments);
 				if (this.owningElement) {
 					const el = this.owningElement;
 					if (!el.ieCP_setters) el.ieCP_setters = {};
 					el.ieCP_setters[property] = 1;
 					drawTree(el);
 				}
-
-				property = property.replace(regStartingVar, '-ie-'+(prio==='important'?'❗':''));
+				property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
 				this.cssText += '; ' + property + ':' + value + ';';
 				//this[property] = value;
-			}
-			return originalSetProp.apply(this, arguments);
 		}
 	});
 

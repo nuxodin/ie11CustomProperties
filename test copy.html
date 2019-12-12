@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Custom Properties IE11 Test</title>
+  <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="./ie11CustomProperties.js"><\x2fscript>');</script>
+<body>
+<a href="https://github.com/nuxodin/ie11CustomProperties" style="flex-basis:100%; max-width:none; padding:.5em">back to project</a>
+<style>
+html {
+  --theme-color:orange;
+}
+body {
+  display:flex;
+  flex-wrap:wrap;
+}
+body > * {
+  max-width:500px;
+  margin:2rem;
+  padding:2rem;
+  overflow:auto;
+  border:2px solid var(--theme-color);
+}
+h2 {
+  border-bottom:2px solid var(--theme-color);
+}
+a {
+  color:var(--theme-color);
+}
+button {
+  background-color:var(--theme-color);
+}
+pre {
+  color:#fff;
+  background-color:var(--theme-color);
+  font-size:13px;
+  padding:1em;
+  overflow:auto;
+}
+input {
+  background-color:var(--theme-color)
+}
+hr {
+  border:3px solid var(--theme-color);
+}
+</style>
+
+
+
+
+
+<div id=chaining>
+  <h2>Chaining</h2>
+  <style>
+#chaining {
+  --a:var(--theme-color);
+  --b:var(--a);
+  background-color:var(--b);
+}
+#chaining:hover {
+  --a:transparent;
+}
+  </style>
+</div>
+
+
+<script hidden>
+  !document.body.msMatchesSelector && alert("Visit this Page in IE11!");
+  var styleElements = document.querySelectorAll('style:not([hidden]), script:not([hidden])');
+  for (var i=0, styleElement; styleElement = styleElements[i++];) {
+    const pre = document.createElement('pre');
+    var contents = styleElement.innerHTML;
+    contents = contents.replace(/-ie-/g, '--');
+    contents = contents.replace(/-ieVar-[^;]+(;)?( )?/g, '');
+    pre.innerHTML = htmlEntities(contents.trim());
+    styleElement.parentNode.insertBefore(pre, styleElement);
+  }
+  function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
