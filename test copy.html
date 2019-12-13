@@ -19,16 +19,7 @@ body > * {
   margin:2rem;
   padding:2rem;
   overflow:auto;
-  border:2px solid var(--theme-color);
-}
-h2 {
-  border-bottom:2px solid var(--theme-color);
-}
-a {
-  color:var(--theme-color);
-}
-button {
-  background-color:var(--theme-color);
+  border:2px solid black;
 }
 pre {
   color:#fff;
@@ -36,12 +27,6 @@ pre {
   font-size:13px;
   padding:1em;
   overflow:auto;
-}
-input {
-  background-color:var(--theme-color)
-}
-hr {
-  border:3px solid var(--theme-color);
 }
 </style>
 
@@ -51,7 +36,7 @@ hr {
 
 <div id=chaining>
   <h2>Chaining</h2>
-  <style>
+  <style style="display:block; white-space:pre">
 #chaining {
   --a:var(--theme-color);
   --b:var(--a);
@@ -62,20 +47,3 @@ hr {
 }
   </style>
 </div>
-
-
-<script hidden>
-  !document.body.msMatchesSelector && alert("Visit this Page in IE11!");
-  var styleElements = document.querySelectorAll('style:not([hidden]), script:not([hidden])');
-  for (var i=0, styleElement; styleElement = styleElements[i++];) {
-    const pre = document.createElement('pre');
-    var contents = styleElement.innerHTML;
-    contents = contents.replace(/-ie-/g, '--');
-    contents = contents.replace(/-ieVar-[^;]+(;)?( )?/g, '');
-    pre.innerHTML = htmlEntities(contents.trim());
-    styleElement.parentNode.insertBefore(pre, styleElement);
-  }
-  function htmlEntities(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-</script>

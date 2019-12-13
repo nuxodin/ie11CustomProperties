@@ -3,7 +3,7 @@
 !function () {
     'use strict';
 
-    if (!Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector;
+	if (!Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector;
 
 	var w = window;
     if (!w.c1) w.c1 = {};
@@ -363,31 +363,29 @@
 			el.ieCP_unique = ++uniqueCounter;
 			el.classList.add('iecp-u' + el.ieCP_unique);
 		}
-		// if (!el.ieCP_sheet) { zzz
-		// 	var tag = document.createElement('style');
-		// 	document.head.appendChild(tag);
-		// 	el.ieCP_sheet = tag.sheet;
-		// }
 		var style = getComputedStyle(el);
 		if (el.ieCP_sheet) while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
 		for (var prop in el.ieCPSelectors) {
 			var important = style['-ieVar-❗' + prop];
 			let valueWithVar = important || style['-ieVar-' + prop];
-			if (!valueWithVar) continue;
+			if (!valueWithVar) continue; // todo, what if '0'
+
 			var value = styleComputeValueWidthVars(style, valueWithVar);
 
 			// beta
-			//var servedBy = {};
-			//var value = styleComputeValueWidthVars(style, valueWithVar, servedBy);
-			//if (servedBy.allByRoot !== false) continue;
+			// var details = {};
+			// details.onpropertyneeded = function(prop){ prop = '-ie-'+prop.substr(2); !done[prop] && drawProp(prop); }
+			// var value = styleComputeValueWidthVars(style, valueWithVar, details);
+			// if (details.allByRoot !== false) continue; // dont have to draw root-properties
 
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
 				} else {
-					//el.ieCP_sheet.insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
-					elementStyleSheet(el).insertRule(item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
+					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
+					let selector = item.selector;
+					elementStyleSheet(el).insertRule(selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
 				}
 			}
 		}
@@ -433,11 +431,12 @@
 	}
 
 	const regValueGetters = /var\(([^),]+)(\,(.+))?\)/g;
-	function styleComputeValueWidthVars(style, valueWithVar, servedByReference){
+	function styleComputeValueWidthVars(style, valueWithVar, details){
 		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
 			variable = variable.trim();
+			// beta if (details && details.onpropertyneeded) details.onpropertyneeded(variable)  // draw depending CPs first while drawing the element
 			var pValue = style.getPropertyValue(variable);
-			if (servedByReference && style.lastPropertyServedBy !== document.documentElement) servedByReference.allByRoot = false;
+			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
 			if (pValue === '' && fallback !== undefined) pValue = fallback.trim(); // fallback
 			return pValue;
 		});
