@@ -32,7 +32,7 @@
 
         var els = root.querySelectorAll(listener.selector), i = 0, el;
         while (el = els[i++]) {
-            listener.elements.set(el,true);
+            listener.elements.set(el, true);
             listener.parsed && listener.parsed.call(el, el);
             listener.immediate && listener.immediate.call(el, el);
         }
@@ -490,76 +490,72 @@
 	}
 
 	// getPropertyValue / setProperty hooks
-	var CSSStyleDeclarationProto = CSSStyleDeclaration.prototype;
+	const StyleProto = CSSStyleDeclaration.prototype;
 
-	var original = CSSStyleDeclarationProto.getPropertyValue;
-	Object.defineProperty(CSSStyleDeclarationProto, 'getPropertyValue', {
-		value: function (property) {
-				this.lastPropertyServedBy = false;
-				if (property[0] !== '-' || property[1] !== '-') return original.apply(this, arguments);
-				const undashed = property.substr(2);
-				const ieProperty = '-ie-'+undashed;
-				const iePropertyImportant = '-ie-❗'+undashed;
-				let value = this[iePropertyImportant] || this[ieProperty];
-				if (this.computedFor) { // computedStyle
-					if (value !== undefined) {
-						if (regHasVar.test(value)) {
-							value = styleComputeValueWidthVars(this, value);
-						}
-						this.lastPropertyServedBy = this.computedFor;
-					} else {
-						if (!register[property] || register[property].inherits) {
-							// inherited
-							//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
-							let el = this.computedFor.parentNode;
-							while (el.nodeType === 1) {
-								// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
-								if (el.ieCP_setters && el.ieCP_setters[property]) {
-									// i could make
-									// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
-									// but i fear performance, stupid?
-									var style = getComputedStyle(el);
-									var tmpVal = style[iePropertyImportant] || style[ieProperty];
-									if (tmpVal !== undefined) {
-										value = tmpVal;
-										if (regHasVar.test(value)) {
-											// calculated style from current element not from the element the value was inherited from! (style, value)
-											value = styleComputeValueWidthVars(this, value);
-										}
-										this.lastPropertyServedBy = el;
-										break;
-									}
+	const oldGetP = StyleProto.getPropertyValue;
+	StyleProto.getPropertyValue = function (property) {
+		this.lastPropertyServedBy = false;
+		if (property[0] !== '-' || property[1] !== '-') return oldGetP.apply(this, arguments);
+		const undashed = property.substr(2);
+		const ieProperty = '-ie-'+undashed;
+		const iePropertyImportant = '-ie-❗'+undashed;
+		let value = this[iePropertyImportant] || this[ieProperty];
+		if (this.computedFor) { // computedStyle
+			if (value !== undefined) {
+				if (regHasVar.test(value)) {
+					value = styleComputeValueWidthVars(this, value);
+				}
+				this.lastPropertyServedBy = this.computedFor;
+			} else {
+				if (!register[property] || register[property].inherits) {
+					// inherited
+					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
+					let el = this.computedFor.parentNode;
+					while (el.nodeType === 1) {
+						// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
+						if (el.ieCP_setters && el.ieCP_setters[property]) {
+							// i could make
+							// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
+							// but i fear performance, stupid?
+							var style = getComputedStyle(el);
+							var tmpVal = style[iePropertyImportant] || style[ieProperty];
+							if (tmpVal !== undefined) {
+								value = tmpVal;
+								if (regHasVar.test(value)) {
+									// calculated style from current element not from the element the value was inherited from! (style, value)
+									value = styleComputeValueWidthVars(this, value);
 								}
-								el = el.parentNode;
+								this.lastPropertyServedBy = el;
+								break;
 							}
 						}
+						el = el.parentNode;
 					}
 				}
-				if (value === undefined && register[property]) value = register[property].initialValue;
-				if (value === undefined) value = '';
-				return value;
+			}
 		}
-	});
+		if (value === undefined && register[property]) value = register[property].initialValue;
+		if (value === undefined) value = '';
+		return value;
+	};
 
-	var originalSetProp = CSSStyleDeclarationProto.setProperty;
-	Object.defineProperty(CSSStyleDeclarationProto, 'setProperty', {
-		value: function (property, value, prio) {
-				if (property[0] !== '-' || property[1] !== '-') return originalSetProp.apply(this, arguments);
-				if (this.owningElement) {
-					const el = this.owningElement;
-					if (!el.ieCP_setters) el.ieCP_setters = {};
-					el.ieCP_setters[property] = 1;
-					drawTree(el);
-				}
-				property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
-				this.cssText += '; ' + property + ':' + value + ';';
-				//this[property] = value;
+	const oldSetP = StyleProto.setProperty;
+	StyleProto.setProperty = function (property, value, prio) {
+		if (property[0] !== '-' || property[1] !== '-') return oldSetP.apply(this, arguments);
+		if (this.owningElement) {
+			const el = this.owningElement;
+			if (!el.ieCP_setters) el.ieCP_setters = {};
+			el.ieCP_setters[property] = 1;
+			drawTree(el);
 		}
-	});
+		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
+		this.cssText += '; ' + property + ':' + value + ';';
+		//this[property] = value;
+	};
 
 
 	if (!window.CSS) window.CSS = {};
-	let register = {}
+	const register = {}
 	CSS.registerProperty = function(options){
 		register[options.name] = options;
 	}
