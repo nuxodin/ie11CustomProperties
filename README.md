@@ -1,7 +1,7 @@
 # CSS Variables for IE11
 A real Custom Properties polyfill for IE11.  
 Used on about 8000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
-[Demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/9c57cea4ba37e91aeb885652878322275b621a72/demo.html)  
+*[see the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/9c57cea4ba37e91aeb885652878322275b621a72/demo.html)*  
 [Tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/9c57cea4ba37e91aeb885652878322275b621a72/tests.html)  
 
 
