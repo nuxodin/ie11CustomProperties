@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.6.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v2.7.0 | MIT License | https://git.io/fjXMN */
 // c1.onElement helper
 !function () {
     'use strict';
