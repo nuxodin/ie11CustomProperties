@@ -109,8 +109,6 @@
 	// if ('getElementsByClassName' in HTMLElement.prototype && !('getElementsByClassName' in Element.prototype)) {
 	// 	copyProperty('getElementsByClassName', HTMLElement.prototype, Element.prototype);
 	// }
-
-
 }();
 
 // main logic
@@ -121,8 +119,8 @@
 	if (testEl.style.getPropertyValue('--x') === 'y' || !testEl.msMatchesSelector) return;
 
 	// cached regexps, better performance
-	const regFindSetters = /([\s{;])(--([^;}]+:[^;!}]+)(!important)?)/g;
-	const regFindGetters = /([{;]\s*)([^;}{]+:[^;}]*var\([^!;}]+)(!important)?/g;
+	const regFindSetters = /([\s{;])(--([A-Za-z0-9-_]+\s*:[^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
+	const regFindGetters = /([{;]\s*)([A-Za-z0-9-_]+\s*:[^;}{]*var\([^!;}{]+)(!important)?(?=\s*([;}$]|$))/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
@@ -184,10 +182,8 @@
 		});
 		*/
 
-		css = css.replace(regFindSetters, function($0, $1, $2, $3, important){ return $1+'-ie-'+(important?'❗':'')+$3}); // !imporant
-		//css = css.replace(regFindSetters, '$1-ie-$3$4');
+		css = css.replace(regFindSetters, function($0, $1, $2, $3, important){ return $1+'-ie-'+(important?'❗':'')+$3; }); // !imporant
 		return css.replace(regFindGetters, function($0, $1, $2, important){ return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; }) // keep the original, so chaining works "--x:var(--y)"
-		//return css.replace(regFindGetters, '$1-ieVar-$2; $2'); // keep the original, so chaining works "--x:var(--y)"
 	}
 
 	// beta
@@ -394,8 +390,8 @@
 		if (!el.ieCP_sheet) {
 			var tag = document.createElement('style');
 			tag.ieCP_elementSheet = 1;
-			el.appendChild(tag); // yes! self-closing tags can have style as children
-			//document.head.appendChild(tag);
+			//el.appendChild(tag); // yes! self-closing tags can have style as children, but - if i set innerHTML, the stylesheet is lost
+			document.head.appendChild(tag);
 			el.ieCP_sheet = tag.sheet;
 		}
 		return el.ieCP_sheet;
