@@ -182,8 +182,11 @@
 		});
 		*/
 
-		css = css.replace(regFindSetters, function($0, $1, $2, $3, important){ return $1+'-ie-'+(important?'❗':'')+$3; }); // !imporant
-		return css.replace(regFindGetters, function($0, $1, $2, important){ return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; }) // keep the original, so chaining works "--x:var(--y)"
+		return css.replace(regFindSetters, function($0, $1, $2, $3, important){
+			return $1+'-ie-'+(important?'❗':'')+$3;
+		}).replace(regFindGetters, function($0, $1, $2, important){
+			return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; // keep the original, so chaining works "--x:var(--y)"
+		});
 	}
 
 	// beta
