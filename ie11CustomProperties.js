@@ -319,9 +319,9 @@
 			var parts = selector.split(':'+pseudo);
 			if (parts.length > 1) {
 				var ending = parts[1].match(/^[^\s]*/); // ending elementpart of selector (used for not(:active))
-				let selector = unPseudo(parts[0]+ending);
+				let sel = unPseudo(parts[0]+ending);
 				const listeners = pseudos[pseudo];
-				c1.onElement(selector, function (el) {
+				c1.onElement(sel, function (el) {
 					el.addEventListener(listeners.on, drawTreeEvent);
 					el.addEventListener(listeners.off, drawTreeEvent);
 				});
