@@ -1,6 +1,9 @@
 # CSS Variables for IE11
 A real Custom Properties polyfill for IE11.  
-Used on about 8000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")
+Used on about 8000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
+[Demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/9c57cea4ba37e91aeb885652878322275b621a72/demo.html)  
+[Tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/9c57cea4ba37e91aeb885652878322275b621a72/tests.html)  
+
 
 ## It can:
 - chaining `--bar:var(--foo)`
@@ -21,9 +24,6 @@ Used on about 8000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - media-queries (redraw on media-changes)
 - transform relative to absolute urls
 - under 3k (min+gzip) and dependency-free
-
-## Demo
-https://rawcdn.githack.com/nuxodin/ie11CustomProperties/132e9517197ba1d9ca71102dcc7e3d76fffb5835/test.html
 
 ## Ussage
 You only want IE11 to load the polyfill, use this snipped in the head of your html file, it then just works:
