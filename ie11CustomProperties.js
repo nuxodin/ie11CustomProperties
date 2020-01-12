@@ -190,11 +190,13 @@
 	}
 
 	// beta
-	//const styles_of_getter_properties = {};
+	const styles_of_getter_properties = {};
 
 	function parseRewrittenStyle(style) { // less memory then parameter cssText?
+
 		// beta
-		//style['z-index']; // ie11 can access unknown properties in stylesheets only if accessed a dashed known property
+		style['z-index']; // ie11 can access unknown properties in stylesheets only if accessed a dashed known property
+
 		const cssText = style.cssText;
 		var matchesGetters = cssText.match(regRuleIEGetters), j, match;
 		if (matchesGetters) {
@@ -203,9 +205,10 @@
 				let propName = match.slice(7, -1);
 				if (propName[0] === '❗') propName = propName.substr(1);
 				getters.push(propName);
+
 				// beta
-				//if (!styles_of_getter_properties[propName]) styles_of_getter_properties[propName] = [];
-				//styles_of_getter_properties[propName].push(style);
+				if (!styles_of_getter_properties[propName]) styles_of_getter_properties[propName] = [];
+				styles_of_getter_properties[propName].push(style);
 			}
 		}
 		var matchesSetters = cssText.match(regRuleIESetters);
@@ -238,8 +241,10 @@
 					drawTree(document.documentElement)
 				})
 			}
-
 		}
+
+		// beta
+		redrawStyleSheets()
 	}
 
 	function addGettersSelector(selector, properties) {
@@ -279,21 +284,20 @@
 		drawTree(el);
 	}
 
-	// beta
-	// function redrawStyleSheets() {
-	// 	for (var prop in styles_of_getter_properties) {
-	// 		let styles = styles_of_getter_properties[prop];
-	// 		for (var i=0, style; style=styles[i++];) {
-	// 			if (style.owningElement) continue;
-	// 			var value = style['-ieVar-'+prop];
-	// 			if (!value) continue;
-	// 			var value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
-	// 			style[prop] = value;
-	// 		}
-	// 	}
-	// }
-	// setTimeout(redrawStyleSheets,1000);
-	//setTimeout(redrawStyleSheets,2000);
+	//beta
+	function redrawStyleSheets() {
+		for (var prop in styles_of_getter_properties) {
+			let styles = styles_of_getter_properties[prop];
+			for (var i=0, style; style=styles[i++];) {
+				if (style.owningElement) continue;
+				var value = style['-ieVar-'+prop];
+				if (!value) continue;
+				var value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
+				if (value === '') continue;
+				style[prop] = value;
+			}
+		}
+	}
 
 
 	const pseudos = {
@@ -355,9 +359,6 @@
 	var uniqueCounter = 0;
 
 	function _drawElement(el) {
-		// beta
-		// if (el === document.documentElement) redrawStyleSheets();
-
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
 			el.classList.add('iecp-u' + el.ieCP_unique);
@@ -369,19 +370,18 @@
 			let valueWithVar = important || style['-ieVar-' + prop];
 			if (!valueWithVar) continue; // todo, what if '0'
 
-			var value = styleComputeValueWidthVars(style, valueWithVar);
-
-			// beta
-			// var details = {};
-			// details.onpropertyneeded = function(prop){ prop = '-ie-'+prop.substr(2); !done[prop] && drawProp(prop); }
-			// var value = styleComputeValueWidthVars(style, valueWithVar, details);
-			// if (details.allByRoot !== false) continue; // dont have to draw root-properties
+			var details = {};
+			var value = styleComputeValueWidthVars(style, valueWithVar, details);
 
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
 					el.style[prop] = value;
 				} else {
+
+					// beta
+					if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
+
 					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
 					let selector = item.selector;
 					elementStyleSheet(el).insertRule(selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML
@@ -433,7 +433,6 @@
 	function styleComputeValueWidthVars(style, valueWithVar, details){
 		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
 			variable = variable.trim();
-			// beta if (details && details.onpropertyneeded) details.onpropertyneeded(variable)  // draw depending CPs first while drawing the element
 			var pValue = style.getPropertyValue(variable);
 			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
 			if (pValue === '' && fallback !== undefined) pValue = fallback.trim(); // fallback
