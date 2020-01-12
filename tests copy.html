@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSS Custom Properties IE11 Test</title>
+    <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="./ie11CustomProperties.js"><\x2fscript>');</script>
+<body>
+<a href="https://github.com/nuxodin/ie11CustomProperties" style="flex-basis:100%; max-width:none; padding:.5em">back to project</a>
+
+<style>
+html {
+    --green:green;
+    --red:red;
+}
+.tests > * {
+    color:#fff;
+    padding:.5em;
+    margin:.5em 0;
+    background-color:red;
+    position:relative;
+    display:block;
+}
+.tests .code {
+    display:none;
+    color:black;
+    position:absolute;
+    padding:20px;
+    background:#555;
+    z-index:1;
+    right:0;
+    top:0;
+}
+.tests > *:hover .code {
+    display:block;
+}
+.tests .code > pre,
+.tests .code > style,
+.tests .code > script {
+    padding:1em;
+    display:block;
+    white-space:pre;
+    font-family: monospace;
+    background:#eee;
+    font-size:12px;
+}
+.tests .code > pre::before,
+.tests .code > script::before,
+.tests .code > style::before {
+    display:block;
+    font-size:1.2em;
+}
+.tests .code > style::before { content:'transformed'; }
+.tests .code > pre::before { content:'original'; }
+.tests .code > script::before { content:'script'; }
+</style>
+
+<!--
+
+Dear contributor, pre tags are dynamicly changed to style tags.
+This to make it possible to show the original style on hover.
+
+-->
+
+<div class=tests>
+
+    <div class=root-cp>
+        root custom property
+        <div class=code>
+            <pre>
+                .root-cp {
+                    background:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=non-root-cp>
+        non root custom property
+        <div class=code>
+            <pre>
+                body {
+                    --non-root-cp:green;
+                }
+                .non-root-cp {
+                    background:var(--non-root-cp);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=fallback>
+        fallback
+        <div class=code>
+            <pre>
+                .fallback {
+                    background-color:var(--notdefined, green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=chaining>
+        chaining
+        <div class=code>
+            <pre>
+                .chaining {
+                    --a:var(--green);
+                    --b:var(--a);
+                    --c:var(--b);
+                    background-color:var(--c);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=hover>
+        :hover (please hover to test)
+        <div class=code>
+            <pre>
+                #hover {
+                    background-color:#ccc;
+                }
+                #hover:hover {
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <a id=target href="#target">
+        :target (please click to make it the target)
+        <div class=code>
+            <pre>
+                #target {
+                    background-color:#ccc;
+                }
+                #target:target {
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </a>
+
+    <div id=focus tabindex=0>
+        :focus (please click to get focus)
+        <div class=code>
+            <pre>
+                #focus {
+                    background-color:#ccc;
+                }
+                #focus:focus {
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=before>
+        <div style="position:relative; z-index:1">::before</div>
+        <div class=code>
+            <pre>
+                .before::before {
+                    content:'';
+                    position:absolute;
+                    top:0; left:0; right:0; bottom:0; z-index:0;
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=attr style="background-color:var(--green)" ie-style="background-color:var(--green)">
+        attribute (ie-style="")
+        <div class=code>
+            <pre>
+                see the attribute in dev-tools
+            </pre>
+        </div>
+    </div>
+
+    <div class=dom_change>
+        parent dom change
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    document.body.classList.add('dom_changed');
+                },200)
+            </script>
+            <pre>
+                body {
+                    --dom-changed-green:red; /* todo? if this is not set, the polyfill does not know that this test is a target */
+                }
+                body.dom_changed {
+                    --dom-changed-green:green;
+                }
+                .dom_change {
+                    background-color:var(--dom-changed-green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=svg>
+        <div style="position:relative; z-index:1">svg</div>
+        <svg style="position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; height:100%; width:100%" viewbox="0 0 10 10" preserveAspectRatio="none"><rect x="0" y="0" width="10" height="10"></rect></svg>
+        <div class=code>
+            <pre>
+                #svg rect {
+                    fill:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=js_getPV>
+        js computedStyle.getPropertyValue
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    if (getComputedStyle(js_getPV).getPropertyValue('--green') === 'green') {
+                        js_getPV.style.backgroundColor = 'green';
+                    }
+                },10)
+            </script>
+        </div>
+    </div>
+
+    <div id=js_setP>
+        js setProperty
+        <div class=code>
+            <script>
+                js_setP.style.setProperty('--myGreen','green');
+            </script>
+            <pre>
+                #js_setP {
+                    background-color:var(--myGreen);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=media>
+        media-query
+        <div class=code>
+            <pre>
+                @media (min-width: 10px) {
+                    #media  {
+                        background:var(--green);
+                    }
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=important-getter class=important-getter>
+        !important getter
+        <div class=code>
+            <pre>
+                .important-getter {
+                    background-color:var(--green) !important;
+                }
+                #important-getter {
+                    background-color:var(--red);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=important-setter class=important-setter>
+        !important setter
+        <div class=code>
+            <pre>
+                .important-setter {
+                    background-color:var(--green);
+                    --green:green !important;
+                }
+                #important-setter {
+                    --green:red;
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=register-property-no-inherit>
+        non-inherited registered property
+        <div class=code>
+            <script>
+                CSS.registerProperty({
+                    name:'--not-inherited',
+                    inherits:false,
+                    initialValue:'green',
+                });
+            </script>
+            <pre>
+                body {
+                    --not-inherited:red;
+                }
+                #register-property-no-inherit {
+                    background-color:var(--not-inherited);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=addLater inactive>
+        later added html
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    addLater.outerHTML = addLater.outerHTML.replace('inactive', 'active');
+                },200);
+            </script>
+            <pre>
+                #addLater[active] {
+                    background-color:green;
+                }
+            </pre>
+        </div>
+    </div>
+
+</div>
+
+<script>
+!document.body.msMatchesSelector && alert("You are not visiting this page in IE11, open it in IE11 to compare");
+var pres = document.querySelectorAll('pre');
+for (var i=0, pre; pre = pres[i++];) {
+    const style = document.createElement('style');
+    style.innerHTML = pre.innerHTML;
+    pre.parentNode.appendChild(style)
+}
+</script>

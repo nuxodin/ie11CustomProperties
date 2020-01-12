@@ -194,7 +194,7 @@
 
 	function parseRewrittenStyle(style) { // less memory then parameter cssText?
 		// beta
-		//style['z-index']; // can access unknown properties in stylesheets only if accessed a dashed known property
+		//style['z-index']; // ie11 can access unknown properties in stylesheets only if accessed a dashed known property
 		const cssText = style.cssText;
 		var matchesGetters = cssText.match(regRuleIEGetters), j, match;
 		if (matchesGetters) {
