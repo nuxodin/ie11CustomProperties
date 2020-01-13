@@ -2,7 +2,7 @@
 A real Custom Properties polyfill for IE11.  
 Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
   
-**[see the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/ed6a269145661bfc6a43a5b69f06248fa760e766/demo.html)**  
+**[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/ed6a269145661bfc6a43a5b69f06248fa760e766/demo.html)**  
 
 **New in v2.7.2: Great performance improvement**
 
@@ -87,6 +87,6 @@ Use `<div style="--color:blue" ie-style="--color:blue">` for it
 ...is ~~always little~~ highter if vars are not served by root, cause each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
 
-#### Tests
-[Tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/ed6a269145661bfc6a43a5b69f06248fa760e766/tests.html)  
+## Tests
+[See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/ed6a269145661bfc6a43a5b69f06248fa760e766/tests.html)  
 PRs welcome
