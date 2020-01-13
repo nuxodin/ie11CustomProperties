@@ -249,10 +249,10 @@
 
 	function addGettersSelector(selector, properties) {
 		selectorAddPseudoListeners(selector);
-		c1.onElement(unPseudo(selector), function (el) {
+		c1.onElement(unPseudo(selector), {immediate:function (el) {
 			addGetterElement(el, properties, selector);
 			drawElement(el);
-		});
+		}});
 	}
 	function addGetterElement(el, properties, selector) {
 		var i=0, prop, j;
@@ -272,9 +272,9 @@
 	}
 	function addSettersSelector(selector, propVals) {
 		selectorAddPseudoListeners(selector);
-		c1.onElement(unPseudo(selector), function (el) {
+		c1.onElement(unPseudo(selector), {immediate:function (el) {
 			addSetterElement(el, propVals);
-		});
+		}});
 	}
 	function addSetterElement(el, propVals) {
 		if (!el.ieCP_setters) el.ieCP_setters = {};
