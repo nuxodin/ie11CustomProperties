@@ -406,21 +406,21 @@
 		for (var i = 0, el; el = els[i++];) drawElement(el); // tree
 	}
 	// draw queue
-	let drawQueue = {};
+	let drawQueue = new Set();
 	let collecting = false;
 	let drawing = false;
 	function drawElement(el){
-		drawQueue[el.uniqueNumber] = el;
+		drawQueue.add(el);
 		if (collecting) return;
 		collecting = true;
 		requestAnimationFrame(function(){
 			collecting = false;
 			drawing = true;
-			for (var nr in drawQueue) _drawElement(drawQueue[nr]);
+			drawQueue.forEach(_drawElement);
 			requestAnimationFrame(function(){ // mutationObserver will trigger delayed
 				drawing = false;
 			})
-			drawQueue = {};
+			drawQueue.clear();
 		})
 	}
 
