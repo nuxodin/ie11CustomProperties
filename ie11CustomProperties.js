@@ -429,7 +429,7 @@
 		drawTree(e.target)
 	}
 
-	const regValueGetters = /var\(([^),]+)(\,(.+))?\)/g;
+	const regValueGetters = /var\(([^),]+)(\,([^),]+))?\)/g;
 	function styleComputeValueWidthVars(style, valueWithVar, details){
 		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
 			variable = variable.trim();
@@ -445,7 +445,7 @@
 		if (drawing) return;
 		for (var i=0, mutation; mutation=mutations[i++];) {
 			if (mutation.attributeName === 'ie-polyfilled') continue;
-			if (mutation.attributeName === 'iecp-needed') continue;
+			//if (mutation.attributeName === 'iecp-needed') continue; // why?
 			// recheck all selectors if it targets new elements?
 			drawTree(mutation.target);
 		}
