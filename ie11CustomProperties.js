@@ -1,42 +1,37 @@
-/*! ie11CustomProperties.js v2.7.3 | MIT License | https://git.io/fjXMN */
-// c1.onElement helper
+/*! ie11CustomProperties.js v2.7.4 | MIT License | https://git.io/fjXMN */
 !function () {
-    'use strict';
+	'use strict';
+
+	// check for support
+	var testEl = document.createElement('i');
+	testEl.style.setProperty('--x', 'y');
+	if (testEl.style.getPropertyValue('--x') === 'y' || !testEl.msMatchesSelector) return;
 
 	if (!Element.prototype.matches) Element.prototype.matches = Element.prototype.msMatchesSelector;
 
-	var w = window;
-    if (!w.c1) w.c1 = {};
     var listeners = [],
         root = document,
         Observer;
 
-    c1.onElement = function (selector, options/*, disconnectedCallback*/) {
-        if (typeof options === 'function') {
-            options = { parsed: options }
-        }
+	function qsa(el, selector){
+		try {
+			return el.querySelectorAll(selector);
+		} catch(e) {
+			// console.warn('the Selector '+selector+' can not be parsed');
+			return [];
+		}
+	}
+    function onElement (selector, callback) {
         var listener = {
             selector: selector,
-            immediate: options.immediate,
-            //disconnectedCallback: disconnectedCallback,
+            callback: callback,
             elements: new WeakMap(),
         };
-
-        if (options.parsed) {
-            listener.parsed = function (el) {
-                requestAnimationFrame(function () {
-                    options.parsed(el);
-                });
-            };
-        }
-
-        var els = root.querySelectorAll(listener.selector), i = 0, el;
-        while (el = els[i++]) {
+		var els = qsa(root, listener.selector), i=0, el;
+		while (el = els[i++]) {
             listener.elements.set(el, true);
-            listener.parsed && listener.parsed.call(el, el);
-            listener.immediate && listener.immediate.call(el, el);
+            listener.callback.call(el, el);
         }
-
         listeners.push(listener);
         if (!Observer) {
             Observer = new MutationObserver(checkMutations);
@@ -49,16 +44,16 @@
     };
     function checkListener(listener, target) {
         var i = 0, el, els = [];
-        target && target.matches(listener.selector) && els.push(target);
+		try {
+			target && target.matches(listener.selector) && els.push(target);
+		} catch(e) {}
         if (loaded) { // ok? check inside node on innerHTML - only when loaded
-            Array.prototype.push.apply(els, (target || root).querySelectorAll(listener.selector));
+            Array.prototype.push.apply(els, qsa(target || root, listener.selector));
         }
         while (el = els[i++]) {
             if (listener.elements.has(el)) continue;
             listener.elements.set(el,true);
-            //listener.connectedCallback.call(el, el);
-            listener.parsed && listener.parsed.call(el, el);
-            listener.immediate && listener.immediate.call(el, el);
+            listener.callback.call(el, el);
         }
     }
     function checkListeners(inside) {
@@ -92,8 +87,8 @@
 	if (!('sheet' in SVGStyleElement.prototype)) {
 		Object.defineProperty(SVGStyleElement.prototype, 'sheet', {
 			get:function(){
-				var all = document.styleSheets;
-				for (var i=0, sheet; sheet=all[i++];) {
+				var all = document.styleSheets, i=0, sheet;
+				while (sheet=all[i++]) {
 					if (sheet.ownerNode === this) return sheet;
 				}
 
@@ -109,14 +104,8 @@
 	// if ('getElementsByClassName' in HTMLElement.prototype && !('getElementsByClassName' in Element.prototype)) {
 	// 	copyProperty('getElementsByClassName', HTMLElement.prototype, Element.prototype);
 	// }
-}();
 
-// main logic
-!function () {
-	'use strict';
-	var testEl = document.createElement('i');
-	testEl.style.setProperty('--x', 'y');
-	if (testEl.style.getPropertyValue('--x') === 'y' || !testEl.msMatchesSelector) return;
+	// main logic
 
 	// cached regexps, better performance
 	const regFindSetters = /([\s{;])(--([A-Za-z0-9-_]+\s*:[^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
@@ -126,7 +115,7 @@
 	const regHasVar = /var\(/;
 	const regPseudos = /:(hover|active|focus|target|:before|:after)/;
 
-	c1.onElement('link[rel="stylesheet"]', {immediate:function (el) {
+	onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
 			var newCss = rewriteCss(css);
 			if (css === newCss) return;
@@ -136,22 +125,22 @@
 			el.parentNode.insertBefore(style, el);
 			activateStyleElement(style, newCss);
 		});
-	}});
-	c1.onElement('style', {immediate:function (el) {
+	});
+	onElement('style', function (el) {
 		if (el.hasAttribute('ie-polyfilled')) return;
 		if (el.ieCP_elementSheet) return;
 		var css = el.innerHTML;
 		var newCss = rewriteCss(css);
 		if (css === newCss) return;
 		activateStyleElement(el, newCss);
-	}});
-	c1.onElement('[ie-style]', {immediate:function (el) {
+	});
+	onElement('[ie-style]', function (el) {
 		var newCss = rewriteCss('{'+el.getAttribute('ie-style')).substr(1);
 		el.style.cssText += ';'+ newCss;
 		var found = parseRewrittenStyle(el.style);
 		if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
 		if (found.setters) addSetterElement(el, found.setters);
-	}});
+	});
 
 	function relToAbs(base, css) {
 		return css.replace(/url\(([^)]+)\)/g, function($0, $1){
@@ -249,10 +238,10 @@
 
 	function addGettersSelector(selector, properties) {
 		selectorAddPseudoListeners(selector);
-		c1.onElement(unPseudo(selector), {immediate:function (el) {
+		onElement(unPseudo(selector), function (el) {
 			addGetterElement(el, properties, selector);
 			drawElement(el);
-		}});
+		});
 	}
 	function addGetterElement(el, properties, selector) {
 		var i=0, prop, j;
@@ -272,9 +261,9 @@
 	}
 	function addSettersSelector(selector, propVals) {
 		selectorAddPseudoListeners(selector);
-		c1.onElement(unPseudo(selector), {immediate:function (el) {
+		onElement(unPseudo(selector), function (el) {
 			addSetterElement(el, propVals);
-		}});
+		});
 	}
 	function addSetterElement(el, propVals) {
 		if (!el.ieCP_setters) el.ieCP_setters = {};
@@ -318,6 +307,7 @@
 		// ie11 has the strange behavoir, that groups of selectors are individual rules, but starting with the full selector:
 		// td, th, button { color:red } results in this rules:
 		// "td, th, button" | "th, th" | "th"
+		console.log(selector)
 		selector = selector.split(',')[0];
 		for (var pseudo in pseudos) {
 			var parts = selector.split(':'+pseudo);
@@ -325,7 +315,7 @@
 				var ending = parts[1].match(/^[^\s]*/); // ending elementpart of selector (used for not(:active))
 				let sel = unPseudo(parts[0]+ending);
 				const listeners = pseudos[pseudo];
-				c1.onElement(sel, function (el) {
+				onElement(sel, function (el) {
 					el.addEventListener(listeners.on, drawTreeEvent);
 					el.addEventListener(listeners.off, drawTreeEvent);
 				});
