@@ -435,7 +435,7 @@
 		if (drawing) return;
 		for (var i=0, mutation; mutation=mutations[i++];) {
 			if (mutation.attributeName === 'ie-polyfilled') continue;
-			//if (mutation.attributeName === 'iecp-needed') continue; // why?
+			if (mutation.attributeName === 'iecp-needed') continue; // why?
 			// recheck all selectors if it targets new elements?
 			drawTree(mutation.target);
 		}
