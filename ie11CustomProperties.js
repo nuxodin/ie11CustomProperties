@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v2.7.4 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v3.0.0 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
@@ -307,7 +307,6 @@
 		// ie11 has the strange behavoir, that groups of selectors are individual rules, but starting with the full selector:
 		// td, th, button { color:red } results in this rules:
 		// "td, th, button" | "th, th" | "th"
-		console.log(selector)
 		selector = selector.split(',')[0];
 		for (var pseudo in pseudos) {
 			var parts = selector.split(':'+pseudo);
@@ -419,9 +418,42 @@
 		drawTree(e.target)
 	}
 
-	const regValueGetters = /var\(([^),]+)(\,([^),]+))?\)/g;
-	function styleComputeValueWidthVars(style, valueWithVar, details){
-		return valueWithVar.replace(regValueGetters, function (full, variable, x, fallback) {
+	function findVars(str, cb){ // css value parser
+		let level=0, lastPoint=0, newStr = '', i=0, char;
+		while (char=str[i++]) {
+			if (char === '(') ++level;
+			if (level===1) {
+				if (char === '(') {
+					if (str[i-4]+str[i-3]+str[i-2] === 'var') {
+						newStr += str.substring(lastPoint, i-4);
+						lastPoint = i;
+					}
+				}
+				if (char === ')') {
+					let variable = str.substring(lastPoint, i-1).trim(), fallback;
+					let x = variable.indexOf(',');
+					if (x!==-1) {
+						fallback = variable.slice(x+1);
+						variable = variable.slice(0,x);
+					}
+					newStr += cb(variable, fallback);
+					lastPoint = i;
+				}
+			}
+			if (char === ')') --level;
+		}
+		newStr += str.substring(lastPoint);
+		return newStr;
+	}
+	//const regValueGetters = /var\(([^),]+)(\,([^),]+))?\)/g;
+	function styleComputeValueWidthVars(style, valueWithVars, details){
+		return findVars(valueWithVars, function(variable, fallback){
+			var value = style.getPropertyValue(variable);
+			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
+			if (value==='' && fallback) value = styleComputeValueWidthVars(style, fallback, details);
+			return value;
+		});
+		return valueWithVars.replace(regValueGetters, function (full, variable, x, fallback) { // old
 			variable = variable.trim();
 			var pValue = style.getPropertyValue(variable);
 			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;

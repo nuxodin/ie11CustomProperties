@@ -12,6 +12,9 @@ html {
     --green:green;
     --red:red;
 }
+body {
+    --body-green:green;
+}
 .tests > * {
     color:#fff;
     padding:.5em;
@@ -78,11 +81,8 @@ This to make it possible to show the original style on hover.
         non root custom property
         <div class=code>
             <pre>
-                body {
-                    --non-root-cp:green;
-                }
                 .non-root-cp {
-                    background:var(--non-root-cp);
+                    background:var(--body-green);
                 }
             </pre>
         </div>
@@ -94,6 +94,50 @@ This to make it possible to show the original style on hover.
             <pre>
                 .fallback {
                     background-color:var(--notdefined, green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=fallback-var>
+        other var as fallback
+        <div class=code>
+            <pre>
+                .fallback-var {
+                    background-color:var(--notdefined, var(--green));
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=fallback-var-mixed>
+        fallback var mixed, including round brackets (url())
+        <div class=code>
+            <pre>
+                .fallback-var-mixed {
+                    background:var(--notdefined, repeat-y var(--undefined, var(--green)) fixed url(x.y));
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=fallback-non-body-var>
+        other non root var as fallback
+        <div class=code>
+            <pre>
+                .fallback-non-body-var {
+                    background-color:var(--notdefined, var(--body-green));
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=fallback-non-body-var>
+        other non root var as fallback
+        <div class=code>
+            <pre>
+                .fallback-non-body-var {
+                    background-color:var(--notdefined, var(--body-green));
                 }
             </pre>
         </div>
