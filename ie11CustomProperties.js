@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v3.0.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v3.0.1 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
@@ -95,15 +95,7 @@
 			}
 		});
 	}
-	// if ('children' in HTMLElement.prototype && !('children' in Element.prototype)) {
-	// 	copyProperty('children', HTMLElement.prototype, Element.prototype);
-	// }
-	// if ('contains' in HTMLElement.prototype && !('contains' in Element.prototype)) {
-	// 	copyProperty('contains', HTMLElement.prototype, Element.prototype);
-	// }
-	// if ('getElementsByClassName' in HTMLElement.prototype && !('getElementsByClassName' in Element.prototype)) {
-	// 	copyProperty('getElementsByClassName', HTMLElement.prototype, Element.prototype);
-	// }
+
 
 	// main logic
 
@@ -406,10 +398,10 @@
 			collecting = false;
 			drawing = true;
 			drawQueue.forEach(_drawElement);
-			requestAnimationFrame(function(){ // mutationObserver will trigger delayed
+			drawQueue.clear();
+			setTimeout(function(){ // mutationObserver will trigger delayed, requestAnimationFrame will miss some changes
 				drawing = false;
 			})
-			drawQueue.clear();
 		})
 	}
 
