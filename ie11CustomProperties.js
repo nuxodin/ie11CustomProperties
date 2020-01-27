@@ -119,7 +119,9 @@
 		});
 	});
 	onElement('style', function (el) {
-		if (el.hasAttribute('ie-polyfilled')) return;
+		//if (el.hasAttribute('ie-polyfilled')) return;
+		if (el.ieCP_polyfilled) return;
+
 		if (el.ieCP_elementSheet) return;
 		var css = el.innerHTML;
 		var newCss = rewriteCss(css);
@@ -207,7 +209,8 @@
 	}
 	function activateStyleElement(style, css) {
 		style.innerHTML = css;
-		style.setAttribute('ie-polyfilled', true);
+		//style.setAttribute('ie-polyfilled', true);
+		style.ieCP_polyfilled = true;
 		var rules = style.sheet.rules, i=0, rule; // cssRules = CSSRuleList, rules = MSCSSRuleList
 		while (rule = rules[i++]) {
 			const found = parseRewrittenStyle(rule.style);
@@ -273,7 +276,7 @@
 				if (style.owningElement) continue;
 				var value = style['-ieVar-'+prop];
 				if (!value) continue;
-				var value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
+				value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
 				if (value === '') continue;
 				style[prop] = value;
 			}
@@ -458,7 +461,7 @@
 	var observer = new MutationObserver(function(mutations) {
 		if (drawing) return;
 		for (var i=0, mutation; mutation=mutations[i++];) {
-			if (mutation.attributeName === 'ie-polyfilled') continue;
+			//if (mutation.attributeName === 'ie-polyfilled') continue;
 			if (mutation.attributeName === 'iecp-needed') continue; // why?
 			// recheck all selectors if it targets new elements?
 			drawTree(mutation.target);
@@ -559,6 +562,7 @@
 			if (!el.ieCP_setters) el.ieCP_setters = {};
 			el.ieCP_setters[property] = 1;
 			drawTree(el);
+			if (el === document.documentElement) redrawStyleSheets(); // make this inside drawTree?
 		}
 		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
 		this.cssText += '; ' + property + ':' + value + ';';

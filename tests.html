@@ -132,17 +132,6 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
-    <div class=fallback-non-body-var>
-        other non root var as fallback
-        <div class=code>
-            <pre>
-                .fallback-non-body-var {
-                    background-color:var(--notdefined, var(--body-green));
-                }
-            </pre>
-        </div>
-    </div>
-
     <div class=chaining>
         chaining
         <div class=code>
@@ -270,7 +259,7 @@ This to make it possible to show the original style on hover.
     </div>
 
     <div id=js_setP>
-        js setProperty
+        setProperty on own element
         <div class=code>
             <script>
                 js_setP.style.setProperty('--myGreen','green');
@@ -278,6 +267,34 @@ This to make it possible to show the original style on hover.
             <pre>
                 #js_setP {
                     background-color:var(--myGreen);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=bodyDynamic inactive>
+        setProperty on body
+        <div class=code>
+            <script>
+                document.body.style.setProperty('--dyn-body-green', 'green');
+            </script>
+            <pre>
+                #bodyDynamic {
+                    background-color:var(--dyn-body-green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=rootDynamic inactive>
+        setProperty on root
+        <div class=code>
+            <script>
+                document.documentElement.style.setProperty('--dyn-root-green', 'green');
+            </script>
+            <pre>
+                #rootDynamic {
+                    background-color:var(--dyn-root-green);
                 }
             </pre>
         </div>
@@ -356,7 +373,7 @@ This to make it possible to show the original style on hover.
             </script>
             <pre>
                 #addLater[active] {
-                    background-color:green;
+                    background-color:var(--green);
                 }
             </pre>
         </div>
