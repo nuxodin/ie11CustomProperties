@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v3.0.2 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v3.0.3 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
@@ -414,26 +414,26 @@
 	}
 
 	function findVars(str, cb){ // css value parser
-		let level=0, lastPoint=0, newStr = '', i=0, char;
+		let level=0, openedLevel=null, lastPoint=0, newStr = '', i=0, char;
 		while (char=str[i++]) {
-			if (char === '(') ++level;
-			if (level===1) {
-				if (char === '(') {
-					if (str[i-4]+str[i-3]+str[i-2] === 'var') {
-						newStr += str.substring(lastPoint, i-4);
-						lastPoint = i;
-					}
-				}
-				if (char === ')') {
-					let variable = str.substring(lastPoint, i-1).trim(), fallback;
-					let x = variable.indexOf(',');
-					if (x!==-1) {
-						fallback = variable.slice(x+1);
-						variable = variable.slice(0,x);
-					}
-					newStr += cb(variable, fallback);
+			if (char === '(') {
+				++level;
+				if (openedLevel === null && str[i-4]+str[i-3]+str[i-2] === 'var') {
+					openedLevel = level;
+					newStr += str.substring(lastPoint, i-4);
 					lastPoint = i;
 				}
+			}
+			if (char === ')' && openedLevel === level) {
+				let variable = str.substring(lastPoint, i-1).trim(), fallback;
+				let x = variable.indexOf(',');
+				if (x!==-1) {
+					fallback = variable.slice(x+1);
+					variable = variable.slice(0,x);
+				}
+				newStr += cb(variable, fallback);
+				lastPoint = i;
+				openedLevel = null;
 			}
 			if (char === ')') --level;
 		}

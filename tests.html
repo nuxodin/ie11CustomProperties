@@ -121,6 +121,18 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
+    <div class=multiple-vars>
+        multiple vars inside brackets (linear-gradient)
+        <div class=code>
+            <pre>
+                .multiple-vars {
+                    --my-green:green;
+                    background: var(--green) linear-gradient(var(--green), var(--body-green), var(--my-green), transparent);
+                }
+            </pre>
+        </div>
+    </div>
+
     <div class=fallback-non-body-var>
         other non root var as fallback
         <div class=code>
