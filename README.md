@@ -25,7 +25,7 @@ Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - SVG-support
 - media-queries (redraw on media-changes)
 - transform relative to absolute urls
-- under 3k (min+gzip) and dependency-free
+- under 4k (min+gzip) and dependency-free
 
 ## Ussage
 You only want IE11 to load the polyfill, use this snipped in the head of your html file, it then just works:
