@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v3.0.3 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v3.0.4 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
@@ -278,7 +278,9 @@
 				if (!value) continue;
 				value = styleComputeValueWidthVars(getComputedStyle(document.documentElement), value);
 				if (value === '') continue;
-				style[prop] = value;
+				try {
+					style[prop] = value;
+				} catch(e) {}
 			}
 		}
 	}
@@ -414,7 +416,7 @@
 	}
 
 	function findVars(str, cb){ // css value parser
-		let level=0, openedLevel=null, lastPoint=0, newStr = '', i=0, char;
+		let level=0, openedLevel=null, lastPoint=0, newStr = '', i=0, char, insideCalc;
 		while (char=str[i++]) {
 			if (char === '(') {
 				++level;
@@ -422,6 +424,9 @@
 					openedLevel = level;
 					newStr += str.substring(lastPoint, i-4);
 					lastPoint = i;
+				}
+				if (str[i-5]+str[i-4]+str[i-3]+str[i-2] === 'calc') {
+					insideCalc = level;
 				}
 			}
 			if (char === ')' && openedLevel === level) {
@@ -431,19 +436,23 @@
 					fallback = variable.slice(x+1);
 					variable = variable.slice(0,x);
 				}
-				newStr += cb(variable, fallback);
+				newStr += cb(variable, fallback, insideCalc);
 				lastPoint = i;
 				openedLevel = null;
 			}
-			if (char === ')') --level;
+			if (char === ')') {
+				--level;
+				if (insideCalc === level) insideCalc = null;
+			}
 		}
 		newStr += str.substring(lastPoint);
 		return newStr;
 	}
 	//const regValueGetters = /var\(([^),]+)(\,([^),]+))?\)/g;
 	function styleComputeValueWidthVars(style, valueWithVars, details){
-		return findVars(valueWithVars, function(variable, fallback){
+		return findVars(valueWithVars, function(variable, fallback, insideCalc){
 			var value = style.getPropertyValue(variable);
+			if (insideCalc) value = value.replace(/^calc\(/, '('); // prevent nested calc
 			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
 			if (value==='' && fallback) value = styleComputeValueWidthVars(style, fallback, details);
 			return value;
