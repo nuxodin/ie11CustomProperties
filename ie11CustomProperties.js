@@ -448,7 +448,6 @@
 		newStr += str.substring(lastPoint);
 		return newStr;
 	}
-	//const regValueGetters = /var\(([^),]+)(\,([^),]+))?\)/g;
 	function styleComputeValueWidthVars(style, valueWithVars, details){
 		return findVars(valueWithVars, function(variable, fallback, insideCalc){
 			var value = style.getPropertyValue(variable);
@@ -456,13 +455,6 @@
 			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
 			if (value==='' && fallback) value = styleComputeValueWidthVars(style, fallback, details);
 			return value;
-		});
-		return valueWithVars.replace(regValueGetters, function (full, variable, x, fallback) { // old
-			variable = variable.trim();
-			var pValue = style.getPropertyValue(variable);
-			if (details && style.lastPropertyServedBy !== document.documentElement) details.allByRoot = false;
-			if (pValue === '' && fallback !== undefined) pValue = fallback.trim(); // fallback
-			return pValue;
 		});
 	}
 
