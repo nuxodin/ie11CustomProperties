@@ -227,6 +227,23 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
+    <div class=beforeAndElement>
+        <div style="position:relative; z-index:1">::before and same property (background-color) on element</div>
+        <div class=code>
+            <pre>
+                .beforeAndElement::before {
+                    content:'';
+                    position:absolute;
+                    bottom:0; top:0; left:0; right:0; z-index:0;
+                    background-color:var(--body-green);
+                }
+                .beforeAndElement.beforeAndElement {
+                    background-color:var(--red);
+                }
+            </pre>
+        </div>
+    </div>
+
     <div class=attr style="background-color:var(--green)" ie-style="background-color:var(--green)">
         attribute (ie-style="")
         <div class=code>
