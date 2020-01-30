@@ -344,6 +344,7 @@
 
 	var uniqueCounter = 0;
 
+	/* old
 	function _drawElement(el) {
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
@@ -374,6 +375,41 @@
 				}
 			}
 		}
+	}
+	*/
+
+	function _drawElement(el) {
+		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
+			el.ieCP_unique = ++uniqueCounter;
+			el.classList.add('iecp-u' + el.ieCP_unique);
+		}
+		var style = getComputedStyle(el);
+		let css = '';
+		for (var prop in el.ieCPSelectors) {
+			var important = style['-ieVar-❗' + prop];
+			let valueWithVar = important || style['-ieVar-' + prop];
+			if (!valueWithVar) continue; // todo, what if '0'
+
+			var details = {};
+			var value = styleComputeValueWidthVars(style, valueWithVar, details);
+
+			if (important) value += ' !important';
+			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
+				if (item.selector === '%styleAttr') {
+					el.style[prop] = value;
+				} else {
+
+					// beta
+					if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
+
+					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
+					let selector = item.selector;
+					//elementStyleSheet(el).insertRule(selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML, not true!!!
+					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '} \n';
+				}
+			}
+		}
+		elementStyleSheet(el).owningElement.innerHTML = css;
 	}
 	function elementStyleSheet(el){
 		if (!el.ieCP_sheet) {
