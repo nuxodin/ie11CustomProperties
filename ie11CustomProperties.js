@@ -392,6 +392,7 @@
 
 			var details = {};
 			var value = styleComputeValueWidthVars(style, valueWithVar, details);
+			//if (value==='initial') value = initials[prop];
 
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
@@ -552,13 +553,13 @@
 		const iePropertyImportant = '-ie-❗'+undashed;
 		let value = this[iePropertyImportant] || this[ieProperty];
 		if (this.computedFor) { // computedStyle
-			if (value !== undefined) {
+			if (value !== undefined && value !== 'inherit') {
 				if (regHasVar.test(value)) {
 					value = styleComputeValueWidthVars(this, value);
 				}
 				this.lastPropertyServedBy = this.computedFor;
-			} else {
-				if (!register[property] || register[property].inherits) {
+			} else { // inherited
+				if (value==='inherit' || !register[property] || register[property].inherits) {
 					// inherited
 					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
 					let el = this.computedFor.parentNode;
@@ -585,6 +586,7 @@
 				}
 			}
 		}
+		//if ((value === undefined || value === 'initial') && register[property]) value = register[property].initialValue; // todo?
 		if (value === undefined && register[property]) value = register[property].initialValue;
 		if (value === undefined) value = '';
 		return value;
@@ -593,18 +595,16 @@
 	const oldSetP = StyleProto.setProperty;
 	StyleProto.setProperty = function (property, value, prio) {
 		if (property[0] !== '-' || property[1] !== '-') return oldSetP.apply(this, arguments);
-		if (this.owningElement) {
-			const el = this.owningElement;
+		const el = this.owningElement;
+		if (el) {
 			if (!el.ieCP_setters) el.ieCP_setters = {};
 			el.ieCP_setters[property] = 1;
-			drawTree(el);
+			drawTree(el); // after setting property?
 		}
 		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
 		this.cssText += '; ' + property + ':' + value + ';';
-		if (this.owningElement && this.owningElement === document.documentElement) {
-			redrawStyleSheets();
-		}
 		//this[property] = value;
+		el === document.documentElement && redrawStyleSheets();
 	};
 
 
@@ -614,6 +614,15 @@
 		register[options.name] = options;
 	}
 
+	// fix "initial" keyword with generated custom properties, this is not supported ad all by ie, should i make a separate "inherit"-polyfill?
+	/*
+	const computed = getComputedStyle(document.documentElement)
+	const initials = {};
+	for (let i in computed) {
+		initials[i.replace(/([A-Z])/, function(x){ return '-'+x.toLowerCase(x) })] = computed[i];
+	}
+	initials['display'] = 'inline';
+	*/
 
 	// utils
 	function fetchCss(url, callback) {

@@ -342,6 +342,22 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
+    <div id=rootDynamic_delayed inactive>
+        setProperty on root delayed
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    document.documentElement.style.setProperty('--dyn-root-green-delayed', 'green');
+                },400)
+            </script>
+            <pre>
+                #rootDynamic_delayed {
+                    background-color:var(--dyn-root-green-delayed);
+                }
+            </pre>
+        </div>
+    </div>
+
     <div id=media>
         media-query
         <div class=code>
@@ -389,21 +405,49 @@ This to make it possible to show the original style on hover.
         <div class=code>
             <script>
                 CSS.registerProperty({
-                    name:'--not-inherited',
+                    name:'--not-inheriting-green',
                     inherits:false,
                     initialValue:'green',
                 });
             </script>
             <pre>
                 body {
-                    --not-inherited:red;
+                    --not-inheriting-green:red;
                 }
                 #register-property-no-inherit {
-                    background-color:var(--not-inherited);
+                    background-color:var(--not-inheriting-green);
                 }
             </pre>
         </div>
     </div>
+
+    <div id=inherit-keyword>
+        "inherit" keyword
+        <div class=code>
+            <pre>
+                #inherit-keyword {
+                    --green:inherit;
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=inherit-keyword-overwrite-registerProperty style="padding:0;">
+        <div class=-box style="padding:10px;">"inherit" keyword, overwrites "registerProperty"</div>
+        <div class=code>
+            <pre>
+                #inherit-keyword-overwrite-registerProperty {
+                    --not-inheriting-green:green;
+                }
+                #inherit-keyword-overwrite-registerProperty .-box {
+                    --not-inheriting-green:inherit;
+                    background-color:var(--not-inheriting-green);
+                }
+            </pre>
+        </div>
+    </div>
+
 
     <div id=addLater inactive>
         later added html
@@ -421,33 +465,22 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
-    <div id="dynamicCalc">
-      setProperty on root, containing calc - should have a border-top of
-      <span class="border-top">10px</span>. (Please click on me)
-      <div class="code">
-        <script>
-          var dynamicCalc = document.querySelector('#dynamicCalc'),
-            dynamicCalcSpan = dynamicCalc.querySelector('.border-top'),
-            currentDynamicCalcValue = 10;
-          dynamicCalc.addEventListener('click', function() {
-            currentDynamicCalcValue = currentDynamicCalcValue == 10 ? 50 : 10;
-            document.documentElement.style.setProperty(
-              '--dynamic-value',
-              currentDynamicCalcValue + 'px'
-            );
-            dynamicCalcSpan.innerText = currentDynamicCalcValue + 5 + 'px';
-          });
-        </script>
-        <pre>
-          #dynamicCalc {
-            border-top: calc(var(--dynamic-value, 10px) + 5px) solid red;
-          }
-          #dynamicCalc {
-            background-color: var(--green);
-          }
-        </pre>
-      </div>
-    </div>
+
+    <!--div id=initial style="position:relative;"> intial is not supported by ie11 ad all
+        <div class=-box style="position:absolute; top:0; left:0; bottom:0; right:0"></div>
+        <span>initial</span>
+        <div class=code>
+            <pre>
+                #initial {
+                    background-color:green;
+                }
+                #initial .-box {
+                    --red:initial;
+                    background-color:var(--red);
+                }
+            </pre>
+        </div>
+    </div-->
 
 
 </div>
