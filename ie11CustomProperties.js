@@ -404,22 +404,21 @@
 
 					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
 					let selector = item.selector;
-					//elementStyleSheet(el).insertRule(selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0); // faster then innerHTML, not true!!!
-					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '} \n';
+					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n'; // faster than insertRule
 				}
 			}
 		}
-		elementStyleSheet(el).owningElement.innerHTML = css;
+		elementSetCss(el, css);
 	}
-	function elementStyleSheet(el){
-		if (!el.ieCP_sheet) {
-			var tag = document.createElement('style');
-			tag.ieCP_elementSheet = 1;
-			//el.appendChild(tag); // yes! self-closing tags can have style as children, but - if i set innerHTML, the stylesheet is lost
-			document.head.appendChild(tag);
-			el.ieCP_sheet = tag.sheet;
+	function elementSetCss(el, css){
+		if (!el.ieCP_styleEl && css) {
+			const styleEl = document.createElement('style');
+			styleEl.ieCP_elementSheet = 1;
+			//el.appendChild(styleEl); // yes! self-closing tags can have style as children, but - if i set innerHTML, the stylesheet is lost
+			document.head.appendChild(styleEl);
+			el.ieCP_styleEl = styleEl;
 		}
-		return el.ieCP_sheet;
+		if (el.ieCP_styleEl) el.ieCP_styleEl.innerHTML = css;
 	}
 	function drawTree(target) {
 		if (!target) return;
