@@ -598,10 +598,12 @@
 			if (!el.ieCP_setters) el.ieCP_setters = {};
 			el.ieCP_setters[property] = 1;
 			drawTree(el);
-			if (el === document.documentElement) redrawStyleSheets(); // make this inside drawTree?
 		}
 		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
 		this.cssText += '; ' + property + ':' + value + ';';
+		if (this.owningElement && this.owningElement === document.documentElement) {
+			redrawStyleSheets();
+		}
 		//this[property] = value;
 	};
 

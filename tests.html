@@ -421,6 +421,35 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
+    <div id="dynamicCalc">
+      setProperty on root, containing calc - should have a border-top of
+      <span class="border-top">10px</span>. (Please click on me)
+      <div class="code">
+        <script>
+          var dynamicCalc = document.querySelector('#dynamicCalc'),
+            dynamicCalcSpan = dynamicCalc.querySelector('.border-top'),
+            currentDynamicCalcValue = 10;
+          dynamicCalc.addEventListener('click', function() {
+            currentDynamicCalcValue = currentDynamicCalcValue == 10 ? 50 : 10;
+            document.documentElement.style.setProperty(
+              '--dynamic-value',
+              currentDynamicCalcValue + 'px'
+            );
+            dynamicCalcSpan.innerText = currentDynamicCalcValue + 5 + 'px';
+          });
+        </script>
+        <pre>
+          #dynamicCalc {
+            border-top: calc(var(--dynamic-value, 10px) + 5px) solid red;
+          }
+          #dynamicCalc {
+            background-color: var(--green);
+          }
+        </pre>
+      </div>
+    </div>
+
+
 </div>
 
 <script>
