@@ -2,7 +2,7 @@
 A real Custom Properties polyfill for IE11.  
 Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
   
-**[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/c5429975aa85cac5edde0a9c09ead18bb7be891b/demo.html)**  
+**[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/demo.html)**  
 
 **New in v2.7.2: Great performance improvement**
 
@@ -22,6 +22,7 @@ Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - cascade works
 - inheritance works
 - `!important` on setters and getters
+- `inherit` keyword for variables
 - SVG-support
 - media-queries (redraw on media-changes)
 - transform relative to absolute urls
@@ -91,5 +92,5 @@ Use `<div style="--color:blue" ie-style="--color:blue">` for it
 eg. `#header` results in `#header.iecp_u44`
 
 ## Tests
-[See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/c5429975aa85cac5edde0a9c09ead18bb7be891b/tests.html)  
+[See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/tests.html)  
 PRs welcome
