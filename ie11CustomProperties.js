@@ -104,8 +104,8 @@
 	const regFindGetters = /([{;]\s*)([A-Za-z0-9-_]+\s*:[^;}{]*var\([^!;}{]+)(!important)?(?=\s*([;}$]|$))/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
-	const regHasVar = /var\(/;
-	const regPseudos = /:(hover|active|focus|target|:before|:after|:first-letter)/;
+	//const regHasVar = /var\(/;
+	const regPseudos = /:(hover|active|focus|target|:before|:after|:first-letter|:first-line)/;
 
 	onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
@@ -172,11 +172,12 @@
 	function encodeValue(value){
 		return value.replace(/ /g,'␣');
 	}
+	const keywords = {initial:1,inherit:1,revert:1,unset:1};
 	function decodeValue(value){
 		if (value===undefined) return;
 		value =  value.replace(/␣/g,' ');
 		const trimmed = value.trim();
-		if (/*trimmed==='initial'||*/trimmed==='inherit') return trimmed;
+		if (keywords[trimmed]) return trimmed;
 		return value;
 	}
 
@@ -561,7 +562,7 @@
 			let value = this[iePropertyImportant] || this[ieProperty];
 			if (value !== undefined) {
 				value = decodeValue(value);
-				// todo, test if value syntax
+				// todo, test if syntax valid
 				return value;
 			}
 		}
@@ -571,17 +572,14 @@
 		const undashed = property.substr(2);
 		const ieProperty = '-ie-'+undashed;
 		const iePropertyImportant = '-ie-❗'+undashed;
-		let value = this[iePropertyImportant] || this[ieProperty];
+		let value = decodeValue(this[iePropertyImportant] || this[ieProperty]);
 		if (this.computedFor) { // computedStyle
-
-			value = decodeValue(value);
-			if (value !== undefined && value !== 'inherit') {
-				if (regHasVar.test(value)) { // todo: to i need this check?!!!
+			if (value !== undefined && !inheritingKeywords[value]) {
+				//if (regHasVar.test(value))  // todo: to i need this check?!!! i think its faster without
 					value = styleComputeValueWidthVars(this, value);
-				}
 				this.lastPropertyServedBy = this.computedFor;
 			} else { // inherited
-				if (value==='inherit' || !register[property] || register[property].inherits) {
+				if (inheritingKeywords[value] || !register[property] || register[property].inherits) {
 					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
 					let el = this.computedFor.parentNode;
 					while (el.nodeType === 1) {
@@ -594,10 +592,8 @@
 							var tmpVal = decodeValue(style[iePropertyImportant] || style[ieProperty]);
 							if (tmpVal !== undefined) {
 								value = tmpVal;
-								if (regHasVar.test(value)) { // todo: to i need this check?!!!
-									// calculated style from current element not from the element the value was inherited from! (style, value)
-									value = styleComputeValueWidthVars(this, value);
-								}
+								// calculated style from current element not from the element the value was inherited from! (style, value)
+								value = styleComputeValueWidthVars(this, value);
 								this.lastPropertyServedBy = el;
 								break;
 							}
@@ -606,12 +602,14 @@
 					}
 				}
 			}
+			if (value==='initial') return '';
 		}
 		//if ((value === undefined || value === 'initial') && register[property]) value = register[property].initialValue; // todo?
 		if (value === undefined && register[property]) value = register[property].initialValue;
 		if (value === undefined) return '';
 		return value;
 	};
+	const inheritingKeywords = {inherit:1,revert:1,unset:1};
 
 	const oldSetP = StyleProto.setProperty;
 	StyleProto.setProperty = function (property, value, prio) {
