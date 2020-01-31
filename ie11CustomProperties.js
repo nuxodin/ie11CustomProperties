@@ -561,7 +561,6 @@
 			const iePropertyImportant = '-ieVar-❗'+property;
 			let value = this[iePropertyImportant] || this[ieProperty];
 			if (value !== undefined) {
-				value = decodeValue(value);
 				// todo, test if syntax valid
 				return value;
 			}
