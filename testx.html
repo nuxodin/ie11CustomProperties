@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+   <title>JS Bin</title>
+  <script src="ie11CustomProperties.js"></script>
+    <style>
+:root {
+    --menu-align-items: center;
+    --menu-display: flex;
+    --menu-flex-wrap: wrap;
+    --menu-list-style: none;
+    --menu-margin: 0;
+    --menu-padding: 0;
+    --menu-position: relative;
+
+    --menu-item-align-items: center;
+    --menu-item-display: flex;
+    --menu-item-flex: 0 1 auto;
+    --menu-item-justify-content: center;
+    --menu-item-padding: 1em 1.5em;
+    --menu-item-position: relative;
+    --menu-item-text-decoration: none;
+    --menu-item-white-space: nowrap;
+
+    --menu-item-active-background: #fff;
+
+
+    --sub-menu-background: white;
+    --sub-menu-border-radius: 0 0 0.25em 0.25em;
+    --sub-menu-flex: 0 1 auto;
+    --sub-menu-flex-direction: column;
+    --sub-menu-top: initial;
+    --sub-menu-left: -999em;
+    --sub-menu-list-style: none;
+    --sub-menu-padding: 0;
+    --sub-menu-position: absolute;
+    --sub-menu-margin: 0;
+
+    --sub-menu-z-index: 99;
+
+    --sub-menu-item-align-items: center;
+    --sub-menu-item-display: flex;
+    --sub-menu-item-flex: 1 1 100%;
+    --sub-menu-item-justify-content: flex-start;
+    --sub-menu-item-padding: 1em 1.5em;
+    --sub-menu-item-position: relative;
+    --sub-menu-item-text-decoration: none;
+    --sub-menu-item-white-space: nowrap;
+    --sub-menu-item-width: 100%;
+
+    --sub-menu-item-active-background: #ccc;
+    --sub-menu-item-active-color: black;
+
+}
+[ui-menu] {
+    align-items: var(--menu-align-items);
+    background: var(--menu-background);
+    border-color: var(--menu-border-color);
+    border-radius: var(--menu-border-radius);
+    border-style: var(--menu-border-style);
+    border-width: var(--menu-border-width);
+    color: var(--menu-color);
+    display: var(--menu-display);
+    flex-wrap: var(--menu-flex-wrap);
+    justify-content: var(--menu-justify-content);
+    list-style: var(--menu-list-style);
+    margin: var(--menu-margin);
+    padding: var(--menu-padding);
+    position: var(--menu-position);
+}
+[ui-menu] > li {
+    border-color: var(--menu-item-border-color);
+    border-radius: var(--menu-item-border-radius);
+    border-style: var(--menu-item-border-style);
+    border-width: var(--menu-item-border-width);
+    flex: var(--menu-item-flex);
+    margin: var(--menu-item-margin);
+    position: var(--menu-item-position);
+}
+[ui-menu] > li > a {
+    align-items: var(--menu-item-align-items);
+    background: var(--menu-item-background);
+    border-radius: var(--menu-item-border-radius);
+    color: var(--menu-item-color);
+    display: var(--menu-item-display);
+    font-size: var(--menu-item-font-size);
+    justify-content: var(--menu-item-justify-content);
+    letter-spacing: var(--menu-item-letter-spacing);
+    outline: var(--menu-item-outline);
+    padding: var(--menu-item-padding);
+    text-decoration: var(--menu-item-text-decoration);
+    text-transform: var(--menu-item-text-transform);
+    white-space: var(--menu-item-white-space);
+    width: var(--menu-item-width);
+}
+[ui-menu] > li ul {
+    background: var(--sub-menu-background);
+    border-color: var(--sub-menu-border-color);
+    border-radius: var(--sub-menu-border-radius);
+    border-style: var(--sub-menu-border-style);
+    border-width: var(--sub-menu-border-width);
+    bottom: var(--sub-menu-bottom);
+    color: var(--sub-menu-color);
+    display: var(--sub-menu-display);
+    flex: var(--sub-menu-flex);
+    flex-direction: var(--sub-menu-flex-direction);
+    left: var(--sub-menu-left);
+    list-style: var(--sub-menu-list-style);
+    margin: var(--sub-menu-margin);
+    min-width: var(--sub-menu-min-width);
+    padding: var(--sub-menu-padding);
+    position: var(--sub-menu-position);
+    right: var(--sub-menu-right);
+    top: var(--sub-menu-top);
+    transition: var(--sub-menu-transition);
+    z-index: var(--sub-menu-z-index);
+}
+[ui-menu] ul > li {
+    border-color: var(--sub-menu-item-border-color);
+    border-radius: var(--sub-menu-item-border-radius);
+    border-style: var(--sub-menu-item-border-style);
+    border-width: var(--sub-menu-item-border-width);
+    display: var(--sub-menu-item-display);
+    flex: var(--sub-menu-item-flex);
+    margin: var(--sub-menu-item-margin);
+    position: var(--sub-menu-item-position);
+}
+[ui-menu] ul > li > a {
+    align-items: var(--sub-menu-item-align-items);
+    background: var(--sub-menu-item-background);
+    border-radius: var(--sub-menu-item-border-radius);
+    color: var(--sub-menu-item-color);
+    display: var(--sub-menu-item-display);
+    font-size: var(--sub-menu-item-font-size);
+    justify-content: var(--sub-menu-item-justify-content);
+    letter-spacing: var(--sub-menu-item-letter-spacing);
+    outline: var(--sub-menu-item-outline);
+    padding: var(--sub-menu-item-padding);
+    text-decoration: var(--sub-menu-item-text-decoration);
+    text-transform: var(--sub-menu-item-text-transform);
+    white-space: var(--sub-menu-item-white-space);
+    width: var(--sub-menu-item-width);
+}
+[ui-menu] > li[is-active] {
+    border-color: var(--menu-item-active-border-color, var(--menu-item-border-color));
+    border-radius: var(--menu-item-active-border-radius, var(--menu-item-border-radius));
+    border-style: var(--menu-item-active-border-style, var(--menu-item-border-style));
+    border-width: var(--menu-item-active-border-width, var(--menu-item-border-width));
+    flex: var(--menu-item-active-flex, var(--menu-item-flex));
+    margin: var(--menu-item-active-margin, var(--menu-item-margin));
+    position: var(--menu-item-active-position, var(--menu-item-position));
+}
+[ui-menu] > li[is-active] > a {
+    align-items: var(--menu-item-active-align-items, var(--menu-item-align-items));
+    background: var(--menu-item-active-background, var(--menu-item-background));
+    border-radius: var(--menu-item-active-border-radius, var(--menu-item-border-radius));
+    color: var(--menu-item-active-color, var(--menu-item-color));
+    display: var(--menu-item-active-display, var(--menu-item-display));
+    font-size: var(--menu-item-active-font-size, var(--menu-item-font-size));
+    justify-content: var(--menu-item-active-justify-content, var(--menu-item-justify-content));
+    letter-spacing: var(--menu-item-active-letter-spacing, var(--menu-item-letter-spacing));
+    outline: var(--menu-item-active-outline, var(--menu-item-outline));
+    padding: var(--menu-item-active-padding, var(--menu-item-padding));
+    text-decoration: var(--menu-item-active-text-decoration, var(--menu-item-text-decoration));
+    text-transform: var(--menu-item-active-text-transform, var(--menu-item-text-transform));
+    white-space: var(--menu-item-active-white-space, var(--menu-item-white-space));
+    width: var(--menu-item-active-width, var(--menu-item-width));
+    transition: var(--menu-item-active-transition, var(--menu-item-transition));
+}
+[ui-menu] ul > li[is-active] {
+    border-color: var(--sub-menu-item-active-border-color, var(--sub-menu-item-border-color));
+    border-radius: var(--sub-menu-item-active-border-radius, var(--sub-menu-item-border-radius));
+    border-style: var(--sub-menu-item-active-border-style, var(--sub-menu-item-border-style));
+    border-width: var(--sub-menu-item-active-border-width, var(--sub-menu-item-border-width));
+    flex: var(--sub-menu-item-active-flex, var(--sub-menu-item-flex));
+    margin: var(--sub-menu-item-active-margin, var(--sub-menu-item-margin));
+    position: var(--sub-menu-item-active-position, var(--sub-menu-item-position));
+}
+[ui-menu] ul > li[is-active] > a {
+    align-items: var(--sub-menu-item-active-align-items, var(--sub-menu-item-align-items));
+    background: var(--sub-menu-item-active-background, var(--sub-menu-item-background));
+    border-radius: var(--sub-menu-item-active-border-radius, var(--sub-menu-item-border-radius));
+    color: var(--sub-menu-item-active-color, var(--sub-menu-item-color));
+    display: var(--sub-menu-item-active-display, var(--sub-menu-item-display));
+    font-size: var(--sub-menu-item-active-font-size, var(--sub-menu-item-font-size));
+    justify-content: var(--sub-menu-item-active-justify-content, var(--sub-menu-item-justify-content));
+    letter-spacing: var(--sub-menu-item-active-letter-spacing, var(--sub-menu-item-letter-spacing));
+    outline: var(--sub-menu-item-active-outline, var(--sub-menu-item-outline));
+    padding: var(--sub-menu-item-active-padding, var(--sub-menu-item-padding));
+    text-decoration: var(--sub-menu-item-active-text-decoration, var(--sub-menu-item-text-decoration));
+    text-transform: var(--sub-menu-item-active-text-transform, var(--sub-menu-item-text-transform));
+    white-space: var(--sub-menu-item-active-white-space, var(--sub-menu-item-white-space));
+    width: var(--sub-menu-item-active-width, var(--sub-menu-item-width));
+}
+[ui-menu] li[is-active] > ul {
+    bottom: var(--sub-menu-active-bottom);
+    left: var(--sub-menu-active-left);
+    min-width: var(--sub-menu-active-min-width);
+    position: var(--sub-menu-active-position);
+    right: var(--sub-menu-active-right);
+    top: var(--sub-menu-active-top);
+    z-index: var(--sub-menu-active-z-index);
+}
+[ui-menu] {
+    --sub-menu-active-left: 0;
+    --sub-menu-active-position: absolute;
+    --sub-menu-active-right: auto;
+    }
+[ui-menu] li[is-edge] {
+    --sub-menu-active-left: auto;
+    --sub-menu-active-right: 0;
+}
+[ui-menu] ul ul {
+    --sub-menu-active-left: 100%;
+    --sub-menu-active-top: 0;
+}
+
+nav {
+    --menu-background: red;
+    --menu-item-color: white;
+    --menu-item-active-color: red;
+    --sub-menu-item-color: darkgoldenrod;
+    --sub-menu-item-active-background: gold;
+    --sub-menu-item-active-color: darkgoldenrod;
+}
+
+    </style>
+</head>
+<body>
+<nav>
+    <ul ui-menu>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Accounts</a>
+            <ul depth="10">
+                <li><a href="#">Link for Accounts</a></li>
+                <li><a href="#">Link for Active Accounts</a>
+                    <ul depth="10">
+                        <li><a href="#">Internal Link</a></li>
+                        <li><a href="#">Internal Link</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Link for New Accounts</a></li>
+            </ul>
+        </li>
+        <li><a href="#">Users</a></li>
+        <li><a href="#">Topics</a></li>
+    </ul>
+
+<script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+<script>
+$(document).ready(function () {
+    $('ul[ui-menu] li').on('mouseenter focusin', function () {
+        $(this).attr('is-active', '');
+    });
+    $('ul[ui-menu] li').on('mouseleave focusout', function () {
+        $(this).removeAttr('is-active');
+    });
+});
+</script>
+</nav>
+</body>
+</html>

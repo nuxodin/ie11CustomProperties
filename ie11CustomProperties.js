@@ -162,7 +162,6 @@
 			return '/*\n @property ... removed \n*'+'/';
 		});
 		*/
-
 		return css.replace(regFindSetters, function($0, $1, $2, $3, $4, important){
 			return $1+'-ie-'+(important?'❗':'')+$3+':'+encodeValue($4);
 		}).replace(regFindGetters, function($0, $1, $2, important){
@@ -170,10 +169,12 @@
 		});
 	}
 	function encodeValue(value){
+		return value;
 		return value.replace(/ /g,'␣');
 	}
 	const keywords = {initial:1,inherit:1,revert:1,unset:1};
 	function decodeValue(value){
+		return value;
 		if (value===undefined) return;
 		value =  value.replace(/␣/g,' ');
 		const trimmed = value.trim();
@@ -397,11 +398,9 @@
 			var important = style['-ieVar-❗' + prop];
 			let valueWithVar = important || style['-ieVar-' + prop];
 			if (!valueWithVar) continue; // todo, what if '0'
-
 			var details = {};
 			var value = styleComputeValueWidthVars(style, valueWithVar, details);
 			//if (value==='initial') value = initials[prop];
-
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
 				if (item.selector === '%styleAttr') {
@@ -554,6 +553,7 @@
 	const oldGetP = StyleProto.getPropertyValue;
 	StyleProto.getPropertyValue = function (property) {
 		this.lastPropertyServedBy = false;
+		property = property.trim();
 
 		/*
 		if (this.owningElement) {
@@ -590,9 +590,8 @@
 							var style = getComputedStyle(el);
 							var tmpVal = decodeValue(style[iePropertyImportant] || style[ieProperty]);
 							if (tmpVal !== undefined) {
-								value = tmpVal;
 								// calculated style from current element not from the element the value was inherited from! (style, value)
-								value = styleComputeValueWidthVars(this, value);
+								value = styleComputeValueWidthVars(this, tmpVal);
 								this.lastPropertyServedBy = el;
 								break;
 							}
@@ -620,7 +619,7 @@
 			drawTree(el); // after setting property?
 		}
 		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
-		this.cssText += '; ' + property + ':' + value + ';';
+		this.cssText += '; ' + property + ':' + encodeValue(value) + ';';
 		//this[property] = value;
 		el === document.documentElement && redrawStyleSheets();
 	};
