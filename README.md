@@ -22,7 +22,7 @@ Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - cascade works
 - inheritance works
 - `!important` on setters and getters
-- `inherit` keyword for variables
+- `inherit`, `initial`, `unset` and `revert` keyword for variables
 - SVG-support
 - media-queries (redraw on media-changes)
 - transform relative to absolute urls
