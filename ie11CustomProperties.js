@@ -100,12 +100,12 @@
 	// main logic
 
 	// cached regexps, better performance
-	const regFindSetters = /([\s{;])(--([A-Za-z0-9-_]+\s*:[^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
+	const regFindSetters = /([\s{;])(--([A-Za-z0-9-_]*)\s*:([^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
 	const regFindGetters = /([{;]\s*)([A-Za-z0-9-_]+\s*:[^;}{]*var\([^!;}{]+)(!important)?(?=\s*([;}$]|$))/g;
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	const regHasVar = /var\(/;
-	const regPseudos = /:(hover|active|focus|target|:before|:after)/;
+	const regPseudos = /:(hover|active|focus|target|:before|:after|:first-letter)/;
 
 	onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
@@ -119,9 +119,7 @@
 		});
 	});
 	onElement('style', function (el) {
-		//if (el.hasAttribute('ie-polyfilled')) return;
 		if (el.ieCP_polyfilled) return;
-
 		if (el.ieCP_elementSheet) return;
 		var css = el.innerHTML;
 		var newCss = rewriteCss(css);
@@ -165,11 +163,21 @@
 		});
 		*/
 
-		return css.replace(regFindSetters, function($0, $1, $2, $3, important){
-			return $1+'-ie-'+(important?'❗':'')+$3;
+		return css.replace(regFindSetters, function($0, $1, $2, $3, $4, important){
+			return $1+'-ie-'+(important?'❗':'')+$3+':'+encodeValue($4);
 		}).replace(regFindGetters, function($0, $1, $2, important){
 			return $1+'-ieVar-'+(important?'❗':'')+$2+'; '+$2; // keep the original, so chaining works "--x:var(--y)"
 		});
+	}
+	function encodeValue(value){
+		return value.replace(/ /g,'␣');
+	}
+	function decodeValue(value){
+		if (value===undefined) return;
+		value =  value.replace(/␣/g,' ');
+		const trimmed = value.trim();
+		if (/*trimmed==='initial'||*/trimmed==='inherit') return trimmed;
+		return value;
 	}
 
 	// beta
@@ -209,7 +217,6 @@
 	}
 	function activateStyleElement(style, css) {
 		style.innerHTML = css;
-		//style.setAttribute('ie-polyfilled', true);
 		style.ieCP_polyfilled = true;
 		var rules = style.sheet.rules, i=0, rule; // cssRules = CSSRuleList, rules = MSCSSRuleList
 		while (rule = rules[i++]) {
@@ -498,7 +505,6 @@
 	var observer = new MutationObserver(function(mutations) {
 		if (drawing) return;
 		for (var i=0, mutation; mutation=mutations[i++];) {
-			//if (mutation.attributeName === 'ie-polyfilled') continue;
 			if (mutation.attributeName === 'iecp-needed') continue; // why?
 			// recheck all selectors if it targets new elements?
 			drawTree(mutation.target);
@@ -547,20 +553,35 @@
 	const oldGetP = StyleProto.getPropertyValue;
 	StyleProto.getPropertyValue = function (property) {
 		this.lastPropertyServedBy = false;
+
+		/*
+		if (this.owningElement) {
+			const ieProperty = '-ieVar-'+property;
+			const iePropertyImportant = '-ieVar-❗'+property;
+			let value = this[iePropertyImportant] || this[ieProperty];
+			if (value !== undefined) {
+				value = decodeValue(value);
+				// todo, test if value syntax
+				return value;
+			}
+		}
+		*/
+
 		if (property[0] !== '-' || property[1] !== '-') return oldGetP.apply(this, arguments);
 		const undashed = property.substr(2);
 		const ieProperty = '-ie-'+undashed;
 		const iePropertyImportant = '-ie-❗'+undashed;
 		let value = this[iePropertyImportant] || this[ieProperty];
 		if (this.computedFor) { // computedStyle
+
+			value = decodeValue(value);
 			if (value !== undefined && value !== 'inherit') {
-				if (regHasVar.test(value)) {
+				if (regHasVar.test(value)) { // todo: to i need this check?!!!
 					value = styleComputeValueWidthVars(this, value);
 				}
 				this.lastPropertyServedBy = this.computedFor;
 			} else { // inherited
 				if (value==='inherit' || !register[property] || register[property].inherits) {
-					// inherited
 					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
 					let el = this.computedFor.parentNode;
 					while (el.nodeType === 1) {
@@ -570,10 +591,10 @@
 							// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
 							// but i fear performance, stupid?
 							var style = getComputedStyle(el);
-							var tmpVal = style[iePropertyImportant] || style[ieProperty];
+							var tmpVal = decodeValue(style[iePropertyImportant] || style[ieProperty]);
 							if (tmpVal !== undefined) {
 								value = tmpVal;
-								if (regHasVar.test(value)) {
+								if (regHasVar.test(value)) { // todo: to i need this check?!!!
 									// calculated style from current element not from the element the value was inherited from! (style, value)
 									value = styleComputeValueWidthVars(this, value);
 								}
@@ -588,7 +609,7 @@
 		}
 		//if ((value === undefined || value === 'initial') && register[property]) value = register[property].initialValue; // todo?
 		if (value === undefined && register[property]) value = register[property].initialValue;
-		if (value === undefined) value = '';
+		if (value === undefined) return '';
 		return value;
 	};
 
@@ -606,6 +627,31 @@
 		//this[property] = value;
 		el === document.documentElement && redrawStyleSheets();
 	};
+
+
+	/*
+	var descriptor = Object.getOwnPropertyDescriptor(StyleProto, 'cssText');
+	var cssTextGetter = descriptor.get;
+	var cssTextSetter = descriptor.set;
+	// descriptor.get = function () {
+	// 	const style = styleGetter.call(this);
+	// 	style.owningElement = this;
+	// 	return style;
+	// }
+	descriptor.set = function (css) {
+		var el = this.owningElement;
+		if (el) {
+			css = rewriteCss('{'+css).substr(1);
+			cssTextSetter.call(this, css);
+			var found = parseRewrittenStyle(this);
+			if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
+			if (found.setters) addSetterElement(el, found.setters);
+			return;
+		}
+		return cssTextSetter.call(this, css);
+	}
+	Object.defineProperty(StyleProto, 'cssText', descriptor);
+	*/
 
 
 	if (!window.CSS) window.CSS = {};
