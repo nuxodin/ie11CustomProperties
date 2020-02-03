@@ -114,6 +114,7 @@
 			newCss = relToAbs(el.href, newCss);
 			el.disabled = true;
 			var style = document.createElement('style');
+			if (el.media) style.setAttribute('media', el.media);
 			el.parentNode.insertBefore(style, el);
 			activateStyleElement(style, newCss);
 		});
