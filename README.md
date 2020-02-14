@@ -28,10 +28,18 @@ Used on about 9000 [Live Websites](https://publicwww.com/websites/ie11CustomProp
 - transform relative to absolute urls
 - under 4k (min+gzip) and dependency-free
 
-## Ussage
-You only want IE11 to load the polyfill, use this snipped in the head of your html file, it then just works:
+## Usage
+You only want IE11 and non-chromium Edge to load the polyfill, use this snipped in the head of your html file, it then just works:
 ```
-<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="yourJsPath/ie11CustomProperties.js"><\x2fscript>');</script>
+<script type="text/javascript">
+if( !!window.MSInputMethodContext ) {
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'yourJsPath/ie11CustomProperties.js';
+  var scripts = document.getElementsByTagName('script');
+    scripts[scripts.length - 1].parentNode.insertBefore(s, scripts[scripts.length - 1]);
+}
+</script>
 ```
 
 ## Help wanted!
