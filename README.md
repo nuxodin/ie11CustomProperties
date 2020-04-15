@@ -1,5 +1,5 @@
 # CSS Variables Polyfill for IE11
-A real Custom Properties polyfill for IE11.  
+A real Custom Properties polyfill for Internet Explorer 11.  
 Used on about 10'000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
   
 **[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/demo.html)**  
@@ -7,12 +7,12 @@ Used on about 10'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 **New in v2.7.2: Great performance improvement**
 
 
-## It can:
+## Features
 - chaining `--bar:var(--foo)`
 - fallback `var(--color, blue)`
 - :focus, :target, :hover
-- handle dynamic added html-content
-- handle dynamic added `<style>`, `<link>`-elements
+- handle dynamically added html-content
+- handle dynamically added `<style>`, `<link>`-elements
 - js-integration:
     - `style.setProperty('--x','y')`
     - `style.getPropertyValue('--x')`
@@ -23,13 +23,13 @@ Used on about 10'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 - inheritance works
 - `!important` on setters and getters
 - `inherit`, `initial`, `unset` and `revert` keyword for variables
-- SVG-support
+- SVG support
 - media-queries (redraw on media-changes)
 - transform relative to absolute urls
 - under 4k (min+gzip) and dependency-free
 
-## Ussage
-You only want IE11 to load the polyfill, use this snipped in the head of your html file, it then just works:
+## Usage
+You only want IE11 to load the polyfill, use this snippet in the head of your html file, it then just works:
 ```
 <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="yourJsPath/ie11CustomProperties.js"><\x2fscript>');</script>
 ```
@@ -64,7 +64,7 @@ header { -ie-myColor:red; }
 main { -ie-myColor:green; }
 li { -ieHasVar-color:var(-ie-myColor); }
 ```
-3. find all affected Element and get its property-values
+3. find all affected Elements and get their property-values
 ```js
 querySelectorAll('li').forEach(function(){
     var color = getComputedStyle(this).getPropertyValue('--myColor');
@@ -83,12 +83,12 @@ li.iecp-u4 { color:green; }
 
 
 ## Small limitations
-#### styles in element-attributes
+#### Styles in element-attributes
 There is no way to get the raw content of style-attributes in IE11.
-Use `<div style="--color:blue" ie-style="--color:blue">` for it
+Use `<div style="--color:blue" ie-style="--color:blue">` for this.
 
-#### specificity for properties containing "var()"
-...is ~~always little~~ highter if vars are not served by root, cause each selector gets an additional class-selector
+#### Specificity for properties containing "var()"
+...is ~~always little~~ higher if vars are not served by root, because each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
 
 ## Tests
