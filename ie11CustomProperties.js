@@ -105,7 +105,7 @@
 	const regRuleIEGetters = /-ieVar-([^:]+):/g
 	const regRuleIESetters = /-ie-([^};]+)/g
 	//const regHasVar = /var\(/;
-	const regPseudos = /:(hover|active|focus|target|:before|:after|:first-letter|:first-line)/;
+	const regPseudos = /:(hover|active|focus|target|visited|link|:before|:after|:first-letter|:first-line)/;
 
 	onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
