@@ -408,7 +408,7 @@
 	function _drawElement(el) {
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
-			el.classList.add('iecp-u' + el.ieCP_unique);
+			el.setAttribute('data-iecp', el.ieCP_unique);
 		}
 		var style = getComputedStyle(el);
 		let css = '';
@@ -430,7 +430,7 @@
 
 					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
 					let selector = item.selector;
-					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
+					css += selector + '[data-iecp="' + el.ieCP_unique + '"]'  + item.pseudo + '{' + prop + ':' + value + '}\n';
 				}
 			}
 		}
