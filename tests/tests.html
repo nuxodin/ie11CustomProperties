@@ -466,6 +466,37 @@ This to make it possible to show the original style on hover.
     </div>
 
 
+    <div id=specificity_id class=specificity_id>
+        specificity: CP will not overwrite #id
+        <div class=code>
+            <pre>
+                #specificity_id {
+                   background-color:green;
+                }
+                .specificity_id {
+                    background-color:var(--red);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=specificity_class>
+        specificity: CP will not overwrite .class.class
+        <div class=code>
+            <pre>
+                .specificity_class.specificity_class {
+                   background-color:green;
+                }
+                .specificity_class {
+                    background-color:var(--red);
+                }
+            </pre>
+        </div>
+    </div>
+
+
+
+
     <!--div id=initial style="position:relative;"> intial is not supported by ie11 ad all
         <div class=-box style="position:absolute; top:0; left:0; bottom:0; right:0"></div>
         <span>initial</span>

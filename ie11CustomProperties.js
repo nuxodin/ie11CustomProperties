@@ -431,6 +431,7 @@
 					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
 					let selector = item.selector;
 					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
+					// el.runtimeStyle[prop] = value; // todo
 				}
 			}
 		}
