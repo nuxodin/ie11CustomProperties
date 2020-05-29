@@ -84,6 +84,9 @@
 	if (!('innerHTML' in Element.prototype)) {
 		copyProperty('innerHTML', HTMLElement.prototype, Element.prototype);
 	}
+	if (!('runtimeStyle' in Element.prototype)) { // new
+		copyProperty('runtimeStyle', HTMLElement.prototype, Element.prototype);
+	}
 	if (!('sheet' in SVGStyleElement.prototype)) {
 		Object.defineProperty(SVGStyleElement.prototype, 'sheet', {
 			get:function(){
@@ -412,6 +415,9 @@
 		}
 		var style = getComputedStyle(el);
 		let css = '';
+
+		el.runtimeStyle.cssText = ''; // new
+
 		for (var prop in el.ieCPSelectors) {
 			var important = style['-ieVar-❗' + prop];
 			let valueWithVar = important || style['-ieVar-' + prop];
@@ -428,10 +434,11 @@
 					// beta
 					if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
 
-					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
-					let selector = item.selector;
-					css += selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
-					// el.runtimeStyle[prop] = value; // todo
+					if (item.pseudo) {
+						css += item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
+					} else {
+						el.runtimeStyle[prop] = value;  // new
+					}
 				}
 			}
 		}
