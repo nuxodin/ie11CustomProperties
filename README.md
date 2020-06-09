@@ -4,7 +4,7 @@ Used on about 10'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
   
 **[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/demo.html)**  
 
-**New in v2.7.2: Great performance improvement**
+**New in v4.0.0: Very fast now**
 
 
 ## Features

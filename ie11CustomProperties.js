@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v3.1.0 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v4.0.0 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
