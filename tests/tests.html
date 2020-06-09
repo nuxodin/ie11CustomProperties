@@ -14,6 +14,7 @@ html {
 }
 body {
     --body-green:green;
+    --body-red:red;
 }
 .tests > * {
     color:#fff;
@@ -467,7 +468,7 @@ This to make it possible to show the original style on hover.
 
 
     <div id=specificity_id class=specificity_id>
-        specificity: CP will not overwrite #id
+        specificity: .CP-getter will not overwrite #id
         <div class=code>
             <pre>
                 #specificity_id {
@@ -481,7 +482,7 @@ This to make it possible to show the original style on hover.
     </div>
 
     <div class=specificity_class>
-        specificity: CP will not overwrite .class.class
+        specificity: .CP-getter will not overwrite .class.class
         <div class=code>
             <pre>
                 .specificity_class.specificity_class {
@@ -494,24 +495,80 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
-
-
-
-    <!--div id=initial style="position:relative;"> intial is not supported by ie11 ad all
-        <div class=-box style="position:absolute; top:0; left:0; bottom:0; right:0"></div>
-        <span>initial</span>
+    <div class=specificity_imortant id=specificity_imortant>
+        specificity: #CP-getter will not overwrite !important
         <div class=code>
             <pre>
-                #initial {
-                    background-color:green;
+                .specificity_imortant {
+                   background-color:green !important;
                 }
-                #initial .-box {
-                    --red:initial;
+                #specificity_imortant {
                     background-color:var(--red);
                 }
             </pre>
         </div>
-    </div-->
+    </div>
+
+    <div class=specificity_cp_before>
+        specificity: CP-getter before not overwrites same selector after
+        <div class=code>
+            <pre>
+                .specificity_cp_before {
+                    background-color:var(--red);
+                }
+                .specificity_cp_before {
+                    background-color:green;
+                }
+            </pre>
+        </div>
+    </div>
+
+
+    <div class=specificity_cp_after>
+        specificity: CP-getter after overwrites same selector before
+        <div class=code>
+            <pre>
+                .specificity_cp_after {
+                   background-color:red;
+                }
+                .specificity_cp_after {
+                    background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+
+    <div class=specificity_cp_before_non_root>
+        specificity: Non root CP-getter before not overwrites same selector after
+        <div class=code>
+            <pre>
+                .specificity_cp_before_non_root {
+                    background-color:var(--body-red);
+                }
+                .specificity_cp_before_non_root {
+                    background-color:green;
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=specificity_cp_after_non_root>
+        specificity: Non-root CP-getter after overwrites same selector before
+        <div class=code>
+            <pre>
+                .specificity_cp_after_non_root {
+                    background-color:red;
+                }
+                .specificity_cp_after_non_root {
+                    background-color:var(--body-green);
+                }
+            </pre>
+        </div>
+    </div>
+
+
+
 
 
 </div>
