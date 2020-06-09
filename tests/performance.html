@@ -32,7 +32,7 @@ body {
         var html = '<div id=noVars>';
         html += '<h2>no vars</h2>';
         html += '<style>.noVars {color:green}</style>';
-        for (var i=0; i<500;i++) {
+        for (var i=0; i<1000;i++) {
             html += '<span class="noVars">x </span>';
         }
         html += '<span class="noVars last">x </span>';
@@ -55,7 +55,7 @@ body {
         var html = '<div id=gettingRootVars>';
         html += '<h2>getting root vars</h2>';
         html += '<style>.rootGetter {color:var(--root-green)}</style>';
-        for (var i=0; i<500;i++) {
+        for (var i=0; i<1000;i++) {
             html += '<span class="rootGetter">x </span>';
         }
         html += '<span class="rootGetter last">x </span>';
@@ -78,7 +78,7 @@ body {
         var html = '<div id=nonRoot>';
         html += '<h2>getting non-root vars</h2>';
         html += '<style>.non-root {color:var(--body-green)}</style>';
-        for (var i=0; i<500;i++) {
+        for (var i=0; i<1000;i++) {
             html += '<span class="non-root">x </span>';
         }
         html += '<span class="non-root last">x </span>';
