@@ -195,11 +195,8 @@
 
 	function parseRewrittenStyle(style) { // less memory then parameter cssText?
 
-		// beta
 		// ie11 can access unknown properties in stylesheets only if accessed a dashed known property
-		if (style['z-index'] === undefined) {
-			return;
-		}
+		if (style['z-index'] === style) return; // do something (compare and return) just for minifiers
 
 		const cssText = style.cssText;
 		var matchesGetters = cssText.match(regRuleIEGetters), j, match;
