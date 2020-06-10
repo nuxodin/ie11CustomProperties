@@ -99,16 +99,19 @@
 		});
 	}
 
-
 	// main logic
+	var styles_of_getter_properties = {};
+	var drawQueue = new Set();
+	var collecting = false;
+	var drawing = false;
 
 	// cached regexps, better performance
-	const regFindSetters = /([\s{;])(--([A-Za-z0-9-_]*)\s*:([^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
-	const regFindGetters = /([{;]\s*)([A-Za-z0-9-_]+\s*:[^;}{]*var\([^!;}{]+)(!important)?(?=\s*([;}$]|$))/g;
-	const regRuleIEGetters = /-ieVar-([^:]+):/g
-	const regRuleIESetters = /-ie-([^};]+)/g
+	var regFindSetters = /([\s{;])(--([A-Za-z0-9-_]*)\s*:([^;!}{]+)(!important)?)(?=\s*([;}]|$))/g;
+	var regFindGetters = /([{;]\s*)([A-Za-z0-9-_]+\s*:[^;}{]*var\([^!;}{]+)(!important)?(?=\s*([;}$]|$))/g;
+	var regRuleIEGetters = /-ieVar-([^:]+):/g
+	var regRuleIESetters = /-ie-([^};]+)/g
 	//const regHasVar = /var\(/;
-	const regPseudos = /:(hover|active|focus|target|visited|link|:before|:after|:first-letter|:first-line)/;
+	var regPseudos = /:(hover|active|focus|target|visited|link|:before|:after|:first-letter|:first-line)/;
 
 	onElement('link[rel="stylesheet"]', function (el) {
 		fetchCss(el.href, function (css) {
@@ -183,7 +186,7 @@
 		return value;
 		return value.replace(/ /g,'␣');
 	}
-	const keywords = {initial:1,inherit:1,revert:1,unset:1};
+	var keywords = {initial:1,inherit:1,revert:1,unset:1};
 	function decodeValue(value){
 		return value;
 		if (value===undefined) return;
@@ -192,9 +195,6 @@
 		if (keywords[trimmed]) return trimmed;
 		return value;
 	}
-
-	// beta
-	const styles_of_getter_properties = {};
 
 	function parseRewrittenStyle(style) { // less memory then parameter cssText?
 
@@ -304,7 +304,7 @@
 	}
 
 
-	const pseudos = {
+	var pseudos = {
 		hover:{
 			on:'mouseenter',
 			off:'mouseleave'
@@ -336,7 +336,8 @@
 			}
 		}
 	}
-	let CSSActive = null;
+
+	var CSSActive = null;
 	document.addEventListener('mousedown',function(e){
 		setTimeout(function(){
 			if (e.target === document.activeElement) {
@@ -360,52 +361,24 @@
 		return selector.replace(regPseudos,'').replace(':not()','');
 	}
 
+	// draw queue
+	function drawElement(el){
+		drawQueue.add(el);
+		if (collecting) return;
+		collecting = true;
+		requestAnimationFrame(function(){
+		//setImmediate(function(){
+			collecting = false;
+			drawing = true;
+			drawQueue.forEach(_drawElement);
+			drawQueue.clear();
+			setTimeout(function(){ // mutationObserver will trigger delayed, requestAnimationFrame will miss some changes
+				drawing = false;
+			})
+		})
+	}
+
 	var uniqueCounter = 0;
-
-	/* old *
-	function _drawElement(el) {
-		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
-			el.ieCP_unique = ++uniqueCounter;
-			el.classList.add('iecp-u' + el.ieCP_unique);
-		}
-		var style = getComputedStyle(el);
-		if (el.ieCP_sheet) while (el.ieCP_sheet.rules[0]) el.ieCP_sheet.deleteRule(0);
-		for (var prop in el.ieCPSelectors) {
-			var important = style['-ieVar-❗' + prop];
-			let valueWithVar = important || style['-ieVar-' + prop];
-			if (!valueWithVar) continue; // todo, what if '0'
-
-			var details = {};
-			var value = styleComputeValueWidthVars(style, valueWithVar, details);
-
-			if (important) value += ' !important';
-			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
-				if (item.selector === '%styleAttr') {
-					el.style[prop] = value;
-				} else {
-
-					// beta
-					if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
-
-					//let selector = item.selector.replace(/>? \.[^ ]+/, ' ', item.selector); // todo: try to equalize specificity
-					let selector = item.selector;
-					elementStyleSheet(el).insertRule(selector + '.iecp-u' + el.ieCP_unique + item.pseudo + ' {' + prop + ':' + value + '}', 0);
-				}
-			}
-		}
-	}
-	function elementStyleSheet(el){
-		if (!el.ieCP_sheet) {
-			const styleEl = document.createElement('style');
-			styleEl.ieCP_elementSheet = 1;
-			//el.appendChild(styleEl); // yes! self-closing tags can have style as children, but - if i set innerHTML, the stylesheet is lost
-			document.head.appendChild(styleEl);
-			el.ieCP_sheet = styleEl.sheet;
-		}
-		return el.ieCP_sheet;
-	}
-
-	/* */
 	function _drawElement(el) {
 		if (!el.ieCP_unique) { // use el.uniqueNumber? but needs class for the css-selector => test performance
 			el.ieCP_unique = ++uniqueCounter;
@@ -463,27 +436,6 @@
 		if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
 		for (var i = 0, el; el = els[i++];) drawElement(el); // tree
 	}
-	// draw queue
-	let drawQueue = new Set();
-	let collecting = false;
-	let drawing = false;
-	function drawElement(el){
-		drawQueue.add(el);
-		if (collecting) return;
-		collecting = true;
-		requestAnimationFrame(function(){
-		//setImmediate(function(){
-			collecting = false;
-			drawing = true;
-			drawQueue.forEach(_drawElement);
-			drawQueue.clear();
-			setTimeout(function(){ // mutationObserver will trigger delayed, requestAnimationFrame will miss some changes
-				drawing = false;
-			})
-		})
-	}
-
-
 	function drawTreeEvent(e) {
 		drawTree(e.target)
 	}
@@ -578,9 +530,9 @@
 	}
 
 	// getPropertyValue / setProperty hooks
-	const StyleProto = CSSStyleDeclaration.prototype;
+	var StyleProto = CSSStyleDeclaration.prototype;
 
-	const oldGetP = StyleProto.getPropertyValue;
+	var oldGetP = StyleProto.getPropertyValue;
 	StyleProto.getPropertyValue = function (property) {
 		this.lastPropertyServedBy = false;
 		property = property.trim();
@@ -639,9 +591,9 @@
 		if (value === undefined) return '';
 		return value;
 	};
-	const inheritingKeywords = {inherit:1,revert:1,unset:1};
+	var inheritingKeywords = {inherit:1,revert:1,unset:1};
 
-	const oldSetP = StyleProto.setProperty;
+	var oldSetP = StyleProto.setProperty;
 	StyleProto.setProperty = function (property, value, prio) {
 		if (property[0] !== '-' || property[1] !== '-') return oldSetP.apply(this, arguments);
 		const el = this.owningElement;
@@ -683,7 +635,7 @@
 
 
 	if (!window.CSS) window.CSS = {};
-	const register = {}
+	var register = {}
 	CSS.registerProperty = function(options){
 		register[options.name] = options;
 	}
