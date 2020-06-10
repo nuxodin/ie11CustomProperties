@@ -246,9 +246,7 @@
 				})
 			}
 		}
-
-		// beta
-		redrawStyleSheets()
+		redrawStyleSheets();
 	}
 
 	function addGettersSelector(selector, properties) {
@@ -458,6 +456,9 @@
 
 	function drawTree(target) {
 		if (!target) return;
+
+		target === document.documentElement && redrawStyleSheets(); // new
+
 		var els = target.querySelectorAll('[iecp-needed]');
 		if (target.hasAttribute && target.hasAttribute('iecp-needed')) drawElement(target); // self
 		for (var i = 0, el; el = els[i++];) drawElement(el); // tree
@@ -651,7 +652,7 @@
 		property = '-ie-'+(prio==='important'?'❗':'') + property.substr(2);
 		this.cssText += '; ' + property + ':' + encodeValue(value) + ';';
 		//this[property] = value;
-		el === document.documentElement && redrawStyleSheets();
+//		el === document.documentElement && redrawStyleSheets(); new in drawTree
 		el && drawTree(el); // its delayed internal
 	};
 

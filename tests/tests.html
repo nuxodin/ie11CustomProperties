@@ -186,6 +186,23 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
+    <div id=hover_root>
+        :hover on :root (please hover to test)
+        <div class=code>
+            <pre>
+                #hover_root {
+                    background-color:var(--root-hover-green);
+                }
+                :root {
+                    --root-hover-green:red;
+                }
+                :root:hover {
+                    --root-hover-green:green;
+                }
+            </pre>
+        </div>
+    </div>
+
     <a id=target href="#target">
         :target (please click to make it the target)
         <div class=code>
