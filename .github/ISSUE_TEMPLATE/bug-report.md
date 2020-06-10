@@ -16,5 +16,6 @@ The version used
 
 
 ** To Reproduce **
-Your minimal reproducible example 
-on https://jsbin.com (jsbin works in IE11) if possible
+Your minimal reproducible example if possible
+Here is a good starting point: (jsbin works in IE11)
+https://jsbin.com/cukoyaraxa/1/edit?html,css,js,output
