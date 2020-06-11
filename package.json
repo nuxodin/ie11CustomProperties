@@ -1,6 +1,6 @@
 {
   "name": "ie11-custom-properties",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Custom Properties polyfill for IE11.",
   "main": "ie11CustomProperties.js",
   "author": "Tobias Buschor",
