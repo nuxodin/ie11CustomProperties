@@ -398,18 +398,12 @@
 			//if (value==='initial') value = initials[prop];
 			if (important) value += ' !important';
 			for (var i=0, item; item=el.ieCPSelectors[prop][i++];) { // todo: split and use requestAnimationFrame?
-				if (item.selector === '%styleAttr') {
-					el.style[prop] = value;
+				if (item.selector === '%styleAttr') el.style[prop] = value; // i dont know why but i initial have to set style also (seen in demo)
+				if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
+				if (item.pseudo) {
+					css += item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
 				} else {
-
-					// beta
-					if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
-
-					if (item.pseudo) {
-						css += item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
-					} else {
-						el.runtimeStyle[prop] = value;  // new
-					}
+					el.runtimeStyle[prop] = value;  // new
 				}
 			}
 		}
