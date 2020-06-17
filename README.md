@@ -34,6 +34,11 @@ You only want IE11 to load the polyfill, use this snippet in the head of your ht
 <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="yourJsPath/ie11CustomProperties.js"><\x2fscript>');</script>
 ```
 
+You can load it from JSDelivr.net CDN if you'd prefer:
+```
+<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.0.1/ie11CustomProperties.min.js"><\x2fscript>');</script>
+```
+
 ## Help wanted!
 - Add a ⭐️
 - Vote for this solution at stackoverflow   
