@@ -29,12 +29,7 @@ Used on about 11'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 - under 4k (min+gzip) and dependency-free
 
 ## Usage
-You only want IE11 to load the polyfill, use this snippet in the head of your html file, it then just works:
-```
-<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="yourJsPath/ie11CustomProperties.js"><\x2fscript>');</script>
-```
-
-You can load it from JSDelivr.net CDN if you'd prefer:
+You only want IE11 to load the polyfill, use this snippet in the head of your html file, it just works:
 ```
 <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.0.1/ie11CustomProperties.min.js"><\x2fscript>');</script>
 ```
