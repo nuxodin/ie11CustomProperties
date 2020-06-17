@@ -30,7 +30,7 @@ Used on about 11'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 
 ## Usage
 You only want IE11 to load the polyfill, use this snippet in the head of your html file, it just works:
-```
+```html
 <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.0.1/ie11CustomProperties.min.js"><\x2fscript>');</script>
 ```
 
