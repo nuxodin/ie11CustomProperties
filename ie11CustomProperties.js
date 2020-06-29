@@ -1,4 +1,4 @@
-/*! ie11CustomProperties.js v4.0.1 | MIT License | https://git.io/fjXMN */
+/*! ie11CustomProperties.js v4.1.0 | MIT License | https://git.io/fjXMN */
 !function () {
 	'use strict';
 
@@ -198,7 +198,6 @@
 				if (propName[0] === '❗') propName = propName.substr(1);
 				getters.push(propName);
 
-				// beta
 				if (!styles_of_getter_properties[propName]) styles_of_getter_properties[propName] = [];
 				styles_of_getter_properties[propName].push(style);
 			}
@@ -274,7 +273,6 @@
 		drawTree(el);
 	}
 
-	//beta
 	function redrawStyleSheets() {
 		for (var prop in styles_of_getter_properties) {
 			let styles = styles_of_getter_properties[prop];

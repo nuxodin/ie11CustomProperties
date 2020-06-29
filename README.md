@@ -4,8 +4,6 @@ Used on about 11'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
   
 **[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/demo.html)**  
 
-**New in v4.0.0: Very fast now**
-
 
 ## Features
 - chaining `--bar:var(--foo)`
@@ -31,7 +29,7 @@ Used on about 11'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 ## Usage
 You only want IE11 to load the polyfill, use this snippet in the head of your html file, it just works:
 ```html
-<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.0.1/ie11CustomProperties.min.js"><\x2fscript>');</script>
+<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\x2fscript>');</script>
 ```
 
 ## Help wanted!
