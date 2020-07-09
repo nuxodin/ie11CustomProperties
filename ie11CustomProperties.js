@@ -546,7 +546,7 @@
 					let el = this.computedFor.parentNode;
 					while (el.nodeType === 1) {
 						// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
-						if (el.ieCP_setters && el.ieCP_setters[property]) {
+						//if (el.ieCP_setters && el.ieCP_setters[property]) {
 							// i could make
 							// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)
 							// but i fear performance, stupid?
@@ -559,7 +559,7 @@
 								this.lastPropertyServedBy = el;
 								break;
 							}
-						}
+						//}
 						el = el.parentNode;
 					}
 				}

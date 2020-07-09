@@ -271,28 +271,6 @@ This to make it possible to show the original style on hover.
         </div>
     </div>
 
-    <div class=dom_change>
-        parent dom change
-        <div class=code>
-            <script>
-                setTimeout(function(){
-                    document.body.classList.add('dom_changed');
-                },200)
-            </script>
-            <pre>
-                body {
-                    --dom-changed-green:red; /* todo? if this is not set, the polyfill does not know that this test is a target */
-                }
-                body.dom_changed {
-                    --dom-changed-green:green;
-                }
-                .dom_change {
-                    background-color:var(--dom-changed-green);
-                }
-            </pre>
-        </div>
-    </div>
-
     <div id=svg>
         <div style="position:relative; z-index:1">svg</div>
         <svg style="position:absolute; top:0; left:0; right:0; bottom:0; overflow:hidden; height:100%; width:100%" viewbox="0 0 10 10" preserveAspectRatio="none"><rect x="0" y="0" width="10" height="10"></rect></svg>
@@ -468,16 +446,79 @@ This to make it possible to show the original style on hover.
 
 
     <div id=addLater inactive>
-        later added html
+        mutation: later added html
         <div class=code>
             <script>
                 setTimeout(function(){
                     addLater.outerHTML = addLater.outerHTML.replace('inactive', 'active');
-                },200);
+                },500);
             </script>
             <pre>
                 #addLater[active] {
                     background-color:var(--green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div id=changeClassOverwriteCP>
+        mutation: class change overwrites cp
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    changeClassOverwriteCP.classList.add('active');
+                },500);
+            </script>
+            <pre>
+                #changeClassOverwriteCP {
+                    background-color:var(--red);
+                }
+                #changeClassOverwriteCP.active {
+                    --red:green;
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=dom_change>
+        mutation: class change (body) changes cp
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    document.body.classList.add('dom_changed');
+                },500)
+            </script>
+            <pre>
+                body {
+                    --dom-changed-green:red; /* todo? if this is not set, the polyfill does not know that this test is a target */
+                }
+                body.dom_changed {
+                    --dom-changed-green:green;
+                }
+                .dom_change {
+                    background-color:var(--dom-changed-green);
+                }
+            </pre>
+        </div>
+    </div>
+
+    <div class=dom_new_setter>
+        mutation: class change (body) makes it to the new setter
+        <div class=code>
+            <script>
+                setTimeout(function(){
+                    document.body.classList.add('newTarget');
+                },500)
+            </script>
+            <pre>
+                :root {
+                    --dom_new_setter:red;
+                }
+                body.dom_changed {
+                    --dom_new_setter:green;
+                }
+                .dom_new_setter {
+                    background-color:var(--dom_new_setter);
                 }
             </pre>
         </div>
