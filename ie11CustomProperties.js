@@ -545,7 +545,8 @@
 					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
 					let el = this.computedFor.parentNode;
 					while (el.nodeType === 1) {
-						// how slower would it be to getComputedStyle for every element, not just with defined ieCP_setters
+						// without, it affects performance: 1000 els inside 100 parents: 1000ms (instead of 600ms) is it acceptable?
+						// would also remove complexity, because i can remove the ieCP_setters property
 						//if (el.ieCP_setters && el.ieCP_setters[property]) {
 							// i could make
 							// value = el.nodeType ? getComputedStyle(this.computedFor.parentNode).getPropertyValue(property)

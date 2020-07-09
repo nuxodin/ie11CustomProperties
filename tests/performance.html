@@ -97,5 +97,38 @@ body {
         })
     }, 3000)
 
+    setTimeout(function(){
+        var html = '<div id=nonRootDeep>';
+        html += '<h2>getting non-root vars deeply nested (100 parents)</h2>';
+        html += '<style>.non-root {color:var(--body-green)}</style>';
+        for (var i=0; i<1000;i++) {
+            html += '<span class="non-root">x </span>';
+        }
+        html += '<span class="non-root last">x </span>';
+        html += '</div>';
+        var zeit0 = performance.now();
+
+        var el = document.createElement('div');
+        tests.appendChild(el);
+        for (var i=0; i<99;i++) {
+            var newEl = document.createElement('div');
+            el.appendChild(newEl)
+            el = newEl;
+        }
+
+        el.insertAdjacentHTML('beforeend', html);
+
+        requestAnimationFrame(function check(){
+            var last = document.getElementById('nonRootDeep').querySelector('.last');
+            var computed = getComputedStyle(last).getPropertyValue('color') !== 'rgb(0, 0, 0)';
+            if (computed) {
+                var zeit1 = performance.now();
+                last.innerHTML = "Duration " + (zeit1 - zeit0) + " ms.";
+            } else {
+                requestAnimationFrame(check);
+            }
+        })
+    }, 4000)
+
 
 </script>
