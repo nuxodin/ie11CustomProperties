@@ -388,7 +388,12 @@
 				if (!important && details.allByRoot !== false) continue; // dont have to draw root-properties
 				if (item.pseudo) {
 					css += item.selector + '.iecp-u' + el.ieCP_unique + item.pseudo + '{' + prop + ':' + value + '}\n';
-				} else {
+				}
+				//Either style or runtimeStyle will break css priorities
+				else if (important) {//Can not set an important property by style or runtimeStyle
+					el.style.cssText += prop + ':' + value
+				}
+				else {
 					el.runtimeStyle[prop] = value;  // new
 				}
 			}
