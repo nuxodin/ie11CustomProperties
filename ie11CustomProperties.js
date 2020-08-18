@@ -544,7 +544,7 @@
 				if (inheritingKeywords[value] || !register[property] || register[property].inherits) {
 					//let el = this.pseudoElt ? this.computedFor : this.computedFor.parentNode;
 					let el = this.computedFor.parentNode;
-					while (el.nodeType === 1) {
+					while (el && el.nodeType === 1) {
 						// without, it affects performance: 1000 els inside 100 parents: 1000ms (instead of 600ms) is it acceptable?
 						// would also remove complexity, because i can remove the ieCP_setters property
 						//if (el.ieCP_setters && el.ieCP_setters[property]) {
