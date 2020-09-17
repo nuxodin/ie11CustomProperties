@@ -88,8 +88,8 @@ Use `<div style="--color:blue" ie-style="--color:blue">` for this.
 ...is ~~always little~~ higher if vars are not served by root, because each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
 
-#### @imports
-@imports are not supported at the moment
+#### @import
+vars in @import is not supported at the moment
 
 #### !important
 There are problems with !important. I need a minimal, reproducible testcase on https://jsbin.com/ 
