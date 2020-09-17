@@ -79,14 +79,18 @@ li.iecp-u4 { color:green; }
 [![custom-properties-ie11.png](https://i.postimg.cc/bryMt02N/custom-properties-ie11.png)](https://postimg.cc/gX7N9ZDf)
 
 
-## Small limitations
+## limitations
 #### Styles in element-attributes
 There is no way to get the raw content of style-attributes in IE11.
-Use `<div style="--color:blue" ie-style="--color:blue">` for this.
+Use `<div style="--color:blue" ie-style="--color:blue">` for this.  
 
 #### Specificity for properties containing "var()"
 ...is ~~always little~~ higher if vars are not served by root, because each selector gets an additional class-selector
 eg. `#header` results in `#header.iecp_u44`
+
+#### @imports
+@imports are not supported at the moment
+
 
 ## Tests
 [See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/tests.html)  
