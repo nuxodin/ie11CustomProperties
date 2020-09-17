@@ -19,7 +19,7 @@ Used on about 11'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
 - style-attributes `<div ie-style="--foo:bar"...`
 - cascade works
 - inheritance works
-- `!important` on setters and getters
+- `!important` on setters and getters (see limitations)
 - `inherit`, `initial`, `unset` and `revert` keyword for variables
 - SVG support
 - media-queries (redraw on media-changes)
@@ -90,6 +90,9 @@ eg. `#header` results in `#header.iecp_u44`
 
 #### @imports
 @imports are not supported at the moment
+
+#### !important
+There are problems with !important. I need a minimal, reproducible testcase on https://jsbin.com/ 
 
 
 ## Tests
