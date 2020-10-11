@@ -130,8 +130,8 @@
 		if (css === newCss) return;
 		activateStyleElement(el, newCss);
 	}
-	onElement('style', foundStyle);
-	onElement('link[rel="stylesheet"]', foundStyle);
+	onElement('style:not([ie-ignore])', foundStyle);
+	onElement('link[rel=stylesheet]:not([ie-ignore])', foundStyle);
 	// immediate, to pass w3c-tests, bud its a bad idea
 	// addEventListener('DOMNodeInserted',function(e){ e.target.tagName === 'STYLE' && foundStyle(e.target); });
 
