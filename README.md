@@ -94,6 +94,8 @@ vars in @import is not supported at the moment
 #### !important
 There are problems with !important. I need a minimal, reproducible testcase on https://jsbin.com/ 
 
+#### Stylesheets outside the domain
+Conversions will not work across domains, add *ie-ignore* tag to the link element so the polyfill ignores this sheet without crashing the site.
 
 ## Tests
 [See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/tests.html)  
