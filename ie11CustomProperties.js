@@ -514,7 +514,7 @@
 
 	var oldGetP = StyleProto.getPropertyValue;
 	StyleProto.getPropertyValue = function (property) {
-		if (!property) return oldGetP.apply(this, property);
+		if (!property) return oldGetP.apply(this, arguments);
 
 		this.lastPropertyServedBy = false;
 		property = property.trim();
