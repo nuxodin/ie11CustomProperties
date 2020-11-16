@@ -1,3 +1,8 @@
+# Discontinued
+The IE11 market share is steadily decreasing. I personally have no need to support IE11 anymore.  
+That's why I have decided to stop working on this project.
+
+
 # CSS Variables Polyfill for IE11
 A real Custom Properties polyfill for Internet Explorer 11.  
 Used on about 22'000 [Live Websites](https://publicwww.com/websites/ie11CustomProperties/ "source")  
