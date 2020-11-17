@@ -1,7 +1,3 @@
-# Discontinued
-The IE11 market share is steadily decreasing. I personally have no need to support IE11 anymore.  
-That's why I have decided to stop working on this project.
-
 
 # CSS Variables Polyfill for IE11
 A real Custom Properties polyfill for Internet Explorer 11.  
@@ -9,6 +5,9 @@ Used on about 22'000 [Live Websites](https://publicwww.com/websites/ie11CustomPr
   
 **[See the demo!](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/demo.html)**  
 
+## Discontinued
+The IE11 market share is steadily decreasing. I personally have no need to support IE11 anymore.  
+That's why I have decided to stop working on this project.
 
 ## Features
 - chaining `--bar:var(--foo)`
