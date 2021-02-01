@@ -130,8 +130,8 @@
 		if (css === newCss) return;
 		activateStyleElement(el, newCss);
 	}
-	onElement('style:not([ie-ignore])', foundStyle);
-	onElement('link[rel=stylesheet]:not([ie-ignore])', foundStyle);
+	onElement('style:not([iecp-ignore])', foundStyle);
+	onElement('link[rel=stylesheet]:not([iecp-ignore])', foundStyle);
 	// immediate, to pass w3c-tests, bud its a bad idea
 	// addEventListener('DOMNodeInserted',function(e){ e.target.tagName === 'STYLE' && foundStyle(e.target); });
 
@@ -305,7 +305,7 @@
 		},
 	};
 	function selectorAddPseudoListeners(selector){
-		// ie11 has the strange behavoir, that groups of selectors are individual rules, but starting with the full selector:
+		// ie11 has the strange behavior, that groups of selectors are individual rules, but starting with the full selector:
 		// td, th, button { color:red } results in this rules:
 		// "td, th, button" | "th, th" | "th"
 		selector = selector.split(',')[0];
