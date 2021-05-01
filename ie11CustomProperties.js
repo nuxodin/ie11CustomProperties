@@ -137,8 +137,8 @@
 
 
 
-	onElement('[ie-style]', function (el) {
-		var newCss = rewriteCss('{'+el.getAttribute('ie-style')).substr(1);
+	onElement('[data-ie-style]', function (el) {
+		var newCss = rewriteCss('{'+el.getAttribute('data-ie-style')).substr(1);
 		el.style.cssText += ';'+ newCss;
 		var found = parseRewrittenStyle(el.style);
 		if (found.getters) addGetterElement(el, found.getters, '%styleAttr');
