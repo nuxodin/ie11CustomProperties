@@ -20,7 +20,7 @@ That's why I have decided to stop working on this project.
     - `style.getPropertyValue('--x')`
     - `getComputedStyle(el).getPropertyValue('--inherited')`
 - Houdini’s new API: `CSS.registerProperty({name:'--red', inherit:false, initialValue:'#e33'})` (of course not animatable)
-- style-attributes `<div ie-style="--foo:bar"...`
+- style-attributes `<div data-ie-style="--foo:bar"...`
 - cascade works
 - inheritance works
 - `!important` on setters and getters (see limitations)
@@ -86,7 +86,7 @@ li.iecp-u4 { color:green; }
 ## Limitations
 #### Styles in element-attributes
 There is no way to get the raw content of style-attributes in IE11.
-Use `<div style="--color:blue" ie-style="--color:blue">` for this.  
+Use `<div style="--color:blue" data-ie-style="--color:blue">` for this.  
 
 #### Specificity for properties containing "var()"
 ...is ~~always little~~ higher if vars are not served by root, because each selector gets an additional class-selector
