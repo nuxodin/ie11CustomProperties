@@ -104,3 +104,7 @@ If you'd prefer the polyfill to ignore (not run) on a particular stylesheet add 
 ## Tests
 [See the tests](https://rawcdn.githack.com/nuxodin/ie11CustomProperties/6c465d21a8c043a45cba939995bb434966048377/tests.html)  
 PRs welcome
+
+## More Polyfills to love
+https://github.com/nuxodin/lazyfill
+
