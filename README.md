@@ -37,7 +37,7 @@ You only want IE11 to load the polyfill, use this snippet in the head of your ht
 ```
 
 ## Help wanted!
-- Add a ⭐️
+- Add a ⭐️ this could be my first 1000-stars project! :)
 - Vote for this solution at stackoverflow   
 https://stackoverflow.com/a/57000437/4865307 and  
 https://stackoverflow.com/a/57000620/4865307
