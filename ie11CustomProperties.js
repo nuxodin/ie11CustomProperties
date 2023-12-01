@@ -362,6 +362,7 @@
 				drawing = false;
 			})
 		})
+		drawing = false; // Sometimes drawing is not finished in the setTimeout due to timing this ensures it is set done at the end
 	}
 
 	var uniqueCounter = 0;
